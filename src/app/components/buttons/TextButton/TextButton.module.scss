@@ -1,0 +1,11 @@
+@import "../../../Colors.module.scss";
+
+.button {
+  color: $purple;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  &:hover {
+    color: $purpleHover;
+  }
+}

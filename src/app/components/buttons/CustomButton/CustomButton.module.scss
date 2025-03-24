@@ -1,0 +1,40 @@
+@import "../../../Colors.module.scss";
+
+.button {
+  color: #fff;
+  font-family: FiraGO;
+  font-size: 16px;
+  line-height: 100%;
+  border: none;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.background {
+  background-color: $purple;
+  padding: 10.5px 20px;
+
+  &:hover {
+    background-color: $purpleHover;
+  }
+}
+
+.outline {
+  border: 1px solid $purple;
+  background-color: transparent;
+  color: rgba(33, 37, 41, 1);
+  padding: 10.5px 20px;
+
+  &:hover {
+    border: 1px solid $purpleHover;
+  }
+}
+
+.rounded {
+  padding: 8px 53px;
+  border-radius: 20px;
+
+  &:hover {
+    padding: 8px 53px;
+  }
+}
