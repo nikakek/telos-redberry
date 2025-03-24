@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import CustomButton from "./components/buttons/CustomButton/CustomButton";
 import TextButton from "./components/buttons/TextButton/TextButton";
+import ColoredButton from "./components/buttons/ColoredButton/ColoredButton";
 
 export default function Home() {
   return (
@@ -17,6 +18,8 @@ export default function Home() {
       />
       <CustomButton text="button" background="background" border="rounded" />
       <TextButton text="უპასუხე" img="/icons/reply.svg" />
+      <ColoredButton color="pink" />
+      
     </>
   );
 }

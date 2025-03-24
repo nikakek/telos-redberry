@@ -1,0 +1,28 @@
+@import "../../../Colors.module.scss";
+
+.button {
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  padding: 5px 18.5px;
+  cursor: pointer;
+  font-family: FiraGO;
+  font-size: 12px;
+  line-height: 100%;
+}
+
+.pink {
+  background-color: $pink;
+}
+
+.orange {
+  background-color: $orange;
+}
+
+.blue {
+  background-color: $blue;
+}
+
+.yellow {
+  background-color: $yellow;
+}
