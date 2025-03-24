@@ -5,7 +5,6 @@ type Props = {
   text: string;
   background: "background" | "outline";
   border: "squared" | "rounded";
-  color?: "primary" | "secondary";	
 };
 
 function CustomButton(props: Props) {

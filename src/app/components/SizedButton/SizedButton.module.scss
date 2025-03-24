@@ -1,0 +1,48 @@
+@import "../../Colors.module.scss";
+
+
+.button {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    background-color: transparent;
+    font-weight: 500;
+    line-height: 150%;
+}
+
+.big {
+    width: 106px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 3px;
+}
+
+.small {
+    width: 86px;
+    height: 26px;
+    border-radius: 5%;
+    font-size: 12px;
+}
+
+.red {
+    color: $red;
+    border: 0.5px solid $red;
+}
+
+.green {
+    color: $green;
+    border: 0.5px solid $green;
+}
+
+.darkYellow {
+    color: $yellow;
+    border: 0.5px solid $darkYellow;
+}
+
+.big .img {
+    width: 18px;
+    height: 20px;
+}
+

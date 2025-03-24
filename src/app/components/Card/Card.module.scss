@@ -1,0 +1,86 @@
+@import "../../Colors.module.scss";
+
+.cardDiv {
+  width: 371px;
+  height: 217px;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.top div {
+  display: flex;
+  gap: 10px;
+}
+
+.date {
+  font-size: 12px;
+  line-height: 100%;
+  color: rgba(33, 37, 41, 1);
+  align-self: center;
+}
+
+.centerDiv {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    margin: auto;
+    gap: 12px;
+}
+
+.p {
+  font-size: 14px;
+  line-height: 100%;
+  color: rgba(52, 58, 64, 1);
+}
+
+.h1 {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 100%;
+    color: rgba(33, 37, 41, 1);
+}
+
+.bottomDiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.comments {
+    display: flex;
+    align-items: center;
+    gap: 2.5px;
+}
+
+
+.yellow {
+  border: 1px solid $mediumYellow;
+}
+
+.orange {
+  border: 1px solid $darkOrange;
+}
+
+.pink {
+  border: 1px solid $darkPink;
+}
+
+.blue {
+  border: 1px solid $darkBlue;
+}

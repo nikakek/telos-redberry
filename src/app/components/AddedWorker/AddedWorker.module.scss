@@ -1,0 +1,19 @@
+@import "../../Colors.module.scss";
+
+.div {
+  width: 536px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 14px;
+  background-color: #fff;
+  font-family: FiraGO;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 100%;
+
+  &:hover {
+    background-color: rgba(248, 249, 250, 1);
+  }
+}

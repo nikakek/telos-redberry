@@ -1,25 +1,19 @@
 import clsx from "clsx";
-import CustomButton from "./components/buttons/CustomButton/CustomButton";
-import TextButton from "./components/buttons/TextButton/TextButton";
-import ColoredButton from "./components/buttons/ColoredButton/ColoredButton";
+import CustomButton from "./components/CustomButton/CustomButton";
+import AnswerButton from "./components/AnswerButton/AnswerButton";
+import ColoredButton from "./components/ColoredButton/ColoredButton";
+import SizedButton from "./components/SizedButton/SizedButton";
+import Person from "./components/Person/Person";
+import AddWorker from "./components/AddWorker/AddWorker";
+import AddedWorker from "./components/AddedWorker/AddedWorker";
+import Header from "./components/Header/Header";
+import CardSection from "./components/CardSection/CardSection";
 
 export default function Home() {
   return (
     <>
-      <CustomButton
-        text="+ შექმენი ახალი დავალება"
-        background="background"
-        border="squared"
-      />
-      <CustomButton
-        text="+ შექმენი ახალი დავალება"
-        background="outline"
-        border="squared"
-      />
-      <CustomButton text="button" background="background" border="rounded" />
-      <TextButton text="უპასუხე" img="/icons/reply.svg" />
-      <ColoredButton color="pink" />
-      
+      <Header />
+      <CardSection type="starter" />
     </>
   );
 }

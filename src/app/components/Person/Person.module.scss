@@ -1,0 +1,15 @@
+.div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1px solid rgba(206, 212, 218);
+    border-radius: 43px;
+    font-size: 14px;
+}
+
+.div img {
+    cursor: pointer;
+}
