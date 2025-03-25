@@ -1,0 +1,27 @@
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid purple;
+    border-radius: 4px;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  
+    &:checked {
+      border-color: purple;
+      position: relative;
+      
+      &::after {
+        content: "✓";
+        font-size: 14px;
+        color: purple;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+  

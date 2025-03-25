@@ -8,12 +8,14 @@ import AddWorker from "./components/AddWorker/AddWorker";
 import AddedWorker from "./components/AddedWorker/AddedWorker";
 import Header from "./components/Header/Header";
 import CardSection from "./components/CardSection/CardSection";
+import PersonCheckbox from "./components/CustomCheckbox/CustomCheckbox";
+import CustomCheckbox from "./components/CustomCheckbox/CustomCheckbox"
 
 export default function Home() {
   return (
     <>
       <Header />
-      <CardSection type="starter" />
+      <CustomCheckbox color="blue" />
     </>
   );
 }
