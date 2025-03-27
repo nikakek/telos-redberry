@@ -1,0 +1,28 @@
+@import "../../Colors.module.scss";
+
+.div {
+    width: 688px;
+    gap: 25px;
+    border-radius: 10px;
+    border: 0.5px solid $purple;
+    padding-bottom: 20px;
+    background-color: #fff;
+}
+
+.box {
+    width: calc(100% - 60px);
+    margin: auto;
+    margin-top: 40px;
+}
+
+.content {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.button {
+    margin-top: 25px;
+    justify-self: end;
+}

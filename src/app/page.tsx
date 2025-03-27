@@ -10,12 +10,18 @@ import Header from "./components/Header/Header";
 import CardSection from "./components/CardSection/CardSection";
 import PersonCheckbox from "./components/CustomCheckbox/CustomCheckbox";
 import CustomCheckbox from "./components/CustomCheckbox/CustomCheckbox"
+import CoWorker from "./components/CoWorker/CoWorker";
+import Filter from "./components/Filter/Filter";
+import CheckboxDiv from "./components/Checkboxdiv/CheckboxDiv";
+import Comment from "./components/Comment/Comment";
+import Dropdown from "./components/Dropdown/Dropdown";
+
 
 export default function Home() {
   return (
     <>
       <Header />
-      <CustomCheckbox color="blue" />
+      <Dropdown min={3} max={300} text="პასუხისმგებელი თანამშრომელი*"/>
     </>
   );
 }

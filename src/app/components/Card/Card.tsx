@@ -6,15 +6,31 @@ import clsx from "clsx";
 
 type Props = {
   color: string;
+  lvl: "low" | "medium" | "high";
 };
 
 function Card(props: Props) {
+  let color: string;
+  switch(props.lvl) {
+    case "low":
+      color = "green"
+      break;
+    case "medium":
+      color = "darkYellow"
+      break;
+    case "high":
+      color = "red"
+      break;
+    default:
+      color = "grey";
+  }
+
   return (
     <div className={clsx(styles.cardDiv, styles[props.color])}>
       <div className={styles.content}>
         <div className={styles.top}>
           <div>
-            <SizedButton color="darkYellow" size="small" />
+            <SizedButton lvl={props.lvl} size="small" />
             <ColoredButton color="pink" />
           </div>
           <span className={styles.date}>22 იანვ, 2022</span>

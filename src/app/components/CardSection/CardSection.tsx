@@ -37,10 +37,10 @@ function CardSection(props: Props) {
     <section className={styles.section}>
       <div className={styles.sectionDiv}>
         <div className={clsx(styles.title, styles[color])}>{text}</div>
-        <Card color={color}/>
-        <Card color={color}/>
-        <Card color={color}/>
-        <Card color={color}/>
+        <Card color={color} lvl="medium"/>
+        <Card color={color} lvl="high"/>
+        <Card color={color} lvl="low"/>
+        <Card color={color} lvl="medium"/>
       </div>
     </section>
   );

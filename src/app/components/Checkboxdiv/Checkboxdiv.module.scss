@@ -1,0 +1,24 @@
+@import "../../Colors.module.scss";
+
+
+.div {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: fit-content;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 100%;
+}
+
+.content .image {
+    height: 28px;
+    width: 28px;
+}
+
+

@@ -1,0 +1,34 @@
+.div {
+
+    width: 598px;
+    display: flex;
+    gap: 12px;
+}
+
+.img {
+    height: 38px;
+    width: 38px;
+    align-self: flex-start;
+}
+
+.content {
+    width: 548px;
+}
+
+.name {
+    color: rgba(2, 21, 38, 1);
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.text {
+    font-weight: 350;
+    font-size: 16px;
+    color: rgba(52, 58, 64, 1);
+    margin-top: 8px;
+}
+
+.answer {
+    width: fit-content;
+    margin-top: 16px;
+}

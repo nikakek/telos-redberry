@@ -1,7 +1,9 @@
+@import "../../Colors.module.scss";
+
 .checkbox {
-    width: 20px;
-    height: 20px;
-    border: 2px solid purple;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid purple;
     border-radius: 4px;
     appearance: none;
     display: flex;
@@ -25,3 +27,51 @@
     }
   }
   
+
+  .blue {
+    border-color: $blue;
+    
+    &:checked {
+      border-color: $blue;
+      
+      &::after {
+        color: $blue;
+      }
+    }
+  }
+
+  .orange {
+    border-color: $orange;
+    
+    &:checked {
+      border-color: $orange;
+      
+      &::after {
+        color: $orange;
+      }
+    }
+  }
+
+  .pink {
+    border-color: $pink;
+    
+    &:checked {
+      border-color: $pink;
+      
+      &::after {
+        color: $pink;
+      }
+    }
+  }
+
+  .yellow {
+    border-color: $yellow;
+    
+    &:checked {
+      border-color: $yellow;
+      
+      &::after {
+        color: $yellow;
+      }
+    }
+  }

@@ -4,7 +4,6 @@ import styles from "./AnswerButton.module.scss"
 
 type Props = {
   text: string;
-  img: string;
 };
 
 function AnswerButton(props: Props) {

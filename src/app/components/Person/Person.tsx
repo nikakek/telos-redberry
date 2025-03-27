@@ -3,14 +3,14 @@ import clsx from "clsx";
 import Image from "next/image";
 
 type Props = {
-    name: string;
+    text: string;
 }
 
 function Person(props: Props) {
 
     return (
         <div className={styles.div}>
-            {props.name}
+            {props.text}
             <Image  src="/icons/x.svg" width={14} height={14} alt="x"/>
         </div>
     )
