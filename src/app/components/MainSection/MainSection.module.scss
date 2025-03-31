@@ -1,0 +1,23 @@
+.mainDiv {
+  padding-top: 40px;
+  padding-bottom: 152px;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 34px;
+}
+
+.dropDown {
+  display: flex;
+  gap: 45px;
+  margin-top: 52px;
+  border: 1px solid rgba(222, 226, 230, 1);
+  width: fit-content;
+  border-radius: 10px;
+}
+
+.cards {
+  display: flex;
+  justify-content: space-between;
+}

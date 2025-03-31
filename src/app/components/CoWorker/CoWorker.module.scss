@@ -1,27 +1,28 @@
 @import "../../Colors.module.scss";
 
 .div {
-    width: fit-content;
-    display: flex;
-    gap: 13px;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 1);
-    width: 200px;
-    height: 44px;
-    border-radius: 10px;
-    cursor: pointer;
+  width: 200px;
+  height: 44px;
+  display: flex;
+  gap: 13px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 
 .active {
-    color: $purple;
+  color: $purple;
 }
 
 .image {
-    transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
 }
 
 .active .image {
-    transform: rotate(180deg);
-    filter: invert(21%) sepia(79%) saturate(1226%) hue-rotate(242deg) brightness(93%) contrast(96%);
+  transform: rotate(180deg);
+  filter: invert(21%) sepia(79%) saturate(1226%) hue-rotate(242deg)
+    brightness(93%) contrast(96%);
 }

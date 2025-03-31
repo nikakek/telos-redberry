@@ -1,43 +1,43 @@
 @import "../../Colors.module.scss";
 
 .section {
-    width: fit-content;
-    margin: auto;
-    margin-top: 79px;
-    display: flex;
-    justify-content: space-between;
+  width: fit-content;
+  margin-top: 79px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .sectionDiv {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .title {
-    width: 100%;
-    color: #fff;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 54px;
+  width: 100%;
+  color: #fff;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 54px;
+  border-radius: 10px;
 }
 
 .yellow {
-    background-color: $mediumYellow;
+  background-color: $mediumYellow;
 }
 
 .orange {
-    background-color: $darkOrange;
+  background-color: $darkOrange;
 }
 
 .pink {
-    background-color: $darkPink;
+  background-color: $darkPink;
 }
 
 .blue {
-    background-color: $darkBlue;
+  background-color: $darkBlue;
 }

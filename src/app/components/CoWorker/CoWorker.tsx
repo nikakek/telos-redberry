@@ -4,22 +4,32 @@ import styles from "./CoWorker.module.scss";
 import Image from "next/image";
 import clsx from "clsx";
 
-function CoWorker() {
-    const [isActive, setIsActive] = useState(false);
+type Props = {
+  title: "დეპარტამენტი" | "პრიორიტეტი" | "თანამშრომელი";
+};
 
-    const handleClick = () => {
-        setIsActive(!isActive);
-    };
+function CoWorker(props: Props) {
+  const [isActive, setIsActive] = useState(false);
 
-    return (
-        <div 
-            className={clsx(styles.div, { [styles.active]: isActive })} 
-            onClick={handleClick}
-        >
-            <h3>თანამშრომელი</h3>
-            <Image src="/icons/arrowDown.svg" width={14} height={8} alt="arrow" className={styles.image} />
-        </div>
-    )
+  const handleClick = () => {
+    setIsActive(!isActive);
+  };
+
+  return (
+    <div
+      className={clsx(styles.div, { [styles.active]: isActive })}
+      onClick={handleClick}
+    >
+      <h3>{props.title}</h3>
+      <Image
+        src="/icons/arrowDown.svg"
+        width={14}
+        height={8}
+        alt="arrow"
+        className={styles.image}
+      />
+    </div>
+  );
 }
 
 export default CoWorker;
