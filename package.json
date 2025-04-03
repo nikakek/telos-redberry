@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "telos-redberry",
   "version": "0.1.0",
   "private": true,
@@ -9,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^1.8.4",
     "clsx": "^2.1.1",
     "next": "15.2.3",
     "react": "^19.0.0",

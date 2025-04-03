@@ -6,19 +6,13 @@ import clsx from "clsx";
 
 type Props = {
   title: "დეპარტამენტი" | "პრიორიტეტი" | "თანამშრომელი";
+  isActive: boolean;
 };
 
-function CoWorker(props: Props) {
-  const [isActive, setIsActive] = useState(false);
-
-  const handleClick = () => {
-    setIsActive(!isActive);
-  };
-
+function CoWorker(props: Props) {  
   return (
     <div
-      className={clsx(styles.div, { [styles.active]: isActive })}
-      onClick={handleClick}
+      className={clsx(styles.div, { [styles.active]: props.isActive })}
     >
       <h3>{props.title}</h3>
       <Image

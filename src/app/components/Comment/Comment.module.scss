@@ -1,5 +1,4 @@
 .div {
-
     width: 598px;
     display: flex;
     gap: 12px;
@@ -26,9 +25,10 @@
     font-size: 16px;
     color: rgba(52, 58, 64, 1);
     margin-top: 8px;
+    word-wrap: break-word;
 }
 
 .answer {
     width: fit-content;
-    margin-top: 16px;
+    margin-top: 16px;;
 }

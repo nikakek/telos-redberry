@@ -1,51 +1,98 @@
-import ColoredButton from "../ColoredButton/ColoredButton";
-import SizedButton from "../SizedButton/SizedButton";
+// components/Card/Card.tsx
+
+import React from "react";
 import styles from "./Card.module.scss";
-import Image from "next/image";
+import SizedButton from "../SizedButton/SizedButton";
+import DepartmentsButton from "../DepartmentsButton/DepartmentsButton";
 import clsx from "clsx";
+import Image from "next/image";
+
+type Department = {
+  id: number;
+  name: string;
+};
+
+type Employee = {
+  id: number;
+  name: string;
+  surname: string;
+  avatar: string;
+};
+
+type Status = {
+  id: number;
+  name: string;
+};
+
+type Priority = {
+  id: number;
+  name: string;
+  icon: string;
+};
+
+type TaskData = {
+  id: number;
+  name: string;
+  description: string;
+  due_date: string;
+  department: Department;
+  employee: Employee;
+  status: Status;
+  priority: Priority;
+};
 
 type Props = {
   color: string;
   lvl: "low" | "medium" | "high";
+  taskData: TaskData;
 };
 
-function Card(props: Props) {
-  let color: string;
-  switch(props.lvl) {
+function Card({ color, lvl, taskData }: Props) {
+  let priorityColor: string;
+  switch (lvl) {
     case "low":
-      color = "green"
+      priorityColor = "green";
       break;
     case "medium":
-      color = "darkYellow"
+      priorityColor = "darkYellow";
       break;
     case "high":
-      color = "red"
+      priorityColor = "red";
       break;
     default:
-      color = "grey";
+      priorityColor = "grey";
   }
 
   return (
-    <div className={clsx(styles.cardDiv, styles[props.color])}>
+    <div className={clsx(styles.cardDiv, styles[color])}>
       <div className={styles.content}>
         <div className={styles.top}>
           <div>
-            <SizedButton lvl={props.lvl} size="small" />
-            <ColoredButton color="pink" />
+            <SizedButton lvl={lvl} size="small" />
+            <DepartmentsButton department={taskData.department} />
           </div>
-          <span className={styles.date}>22 იანვ, 2022</span>
+          <span className={styles.date}>
+            {new Date(taskData.due_date).toLocaleDateString()}
+          </span>
         </div>
         <div className={styles.centerDiv}>
-          <h1 className={styles.h1}>Redberry-ს საიტის ლენდინგის დიზაინი</h1>
-          <p className={styles.p}>
-            შექმენი საიტის მთავარი გვერდი, რომელიც მოიცავს მთავარ სექციებს,
-            ნავიგაციას.
-          </p>
+          <h1 className={styles.h1}>{taskData.name}</h1>
+          <p className={styles.p}>{taskData.description}</p>
         </div>
         <div className={styles.bottomDiv}>
-          <Image src='./images/pfp.svg' width={31} height={31} alt="pfp" />
+          <Image
+            src={taskData.employee.avatar}
+            width={31}
+            height={31}
+            alt="pfp"
+          />
           <div className={styles.comments}>
-            <Image src='./images/Comments.svg' width={22} height={22} alt="comments" />
+            <Image
+              src="/images/Comments.svg"
+              width={22}
+              height={22}
+              alt="comments"
+            />
             <p>8</p>
           </div>
         </div>

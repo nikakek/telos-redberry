@@ -1,0 +1,27 @@
+@import "../../Colors.module.scss";
+
+.clicked {
+  display: none;
+}
+
+.container {
+  width: 231px;
+  padding-left: 14px;
+  border-radius: 5px;
+  font-weight: 300;
+  font-size: 14px;
+  position: absolute;
+  border: 1px solid rgba(206, 212, 218, 1);
+  background-color: #fff;
+}
+
+.border {
+  border: 1px solid $purple;
+}
+
+.container p {
+  font-weight: 300;
+  font-size: 14px;
+  padding-top: 14.5px;
+  padding-bottom: 14.5px;
+}

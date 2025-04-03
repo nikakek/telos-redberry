@@ -1,17 +1,54 @@
+
+// components/CardSection/CardSection.tsx
+
 import styles from "./CardSection.module.scss";
 import clsx from "clsx";
 import Card from "../Card/Card";
 
+type Department = {
+  id: number;
+  name: string;
+};
+
+type Employee = {
+  id: number;
+  name: string;
+  surname: string;
+  avatar: string;
+};
+
+type Status = {
+  id: number;
+  name: string;
+};
+
+type Priority = {
+  id: number;
+  name: string;
+  icon: string;
+};
+
+type TaskData = {
+  id: number;
+  name: string;
+  description: string;
+  due_date: string;
+  department: Department;
+  employee: Employee;
+  status: Status;
+  priority: Priority;
+};
 
 type Props = {
   type: "starter" | "inProgress" | "readyForTest" | "done";
+  tasks?: TaskData[]; // Optional
 };
 
-function CardSection(props: Props) {
+function CardSection({ type, tasks = [] }: Props) {
   let color: string;
   let text: string;
 
-  switch (props.type) {
+  switch (type) {
     case "starter":
       color = "yellow";
       text = "დასაწყები";
@@ -37,10 +74,13 @@ function CardSection(props: Props) {
     <section className={styles.section}>
       <div className={styles.sectionDiv}>
         <div className={clsx(styles.title, styles[color])}>{text}</div>
-        <Card color={color} lvl="medium"/>
-        <Card color={color} lvl="high"/>
-        <Card color={color} lvl="low"/>
-        <Card color={color} lvl="medium"/>
+        {tasks.length === 0 ? (
+          <p className={styles.noTasks}>დავალება არ მოიძებნა</p>
+        ) : (
+          tasks.map((task) => (
+            <Card key={task.id} color={color} lvl="medium" taskData={task} />
+          ))
+        )}
       </div>
     </section>
   );

@@ -1,0 +1,16 @@
+.button {
+    height: 24px;
+    border-radius: 15px;
+    padding: 0 9px; /* Combine padding-right and padding-left */
+    font-family: FiraGO;
+    font-size: 12px;
+    color: #fff;
+    background-color: black;
+    max-width: 88px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap; /* Prevent text wrapping */
+    text-align: center;
+  }
+  

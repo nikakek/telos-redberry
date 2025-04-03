@@ -1,0 +1,165 @@
+.section {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 40px;
+}
+
+.infoDiv {
+  width: fit-content;
+}
+
+.commentsDiv {
+  width: 651px;
+  border-radius: 10px;
+  border: 0.3px solid rgba(221, 210, 255, 1);
+  background-color: rgba(248, 243, 254, 0.65);
+  padding: 40px 45px;
+}
+
+.lvl {
+  display: flex;
+  gap: 18px;
+}
+
+.task {
+  width: 715px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  margin-top: 12px;
+  padding-bottom: 18px;
+}
+
+.taskDetails {
+  width: 493px;
+  margin-top: 63px;
+}
+
+.taskDetails h2 {
+  font-weight: 500;
+  font-size: 24px;
+  color: rgba(42, 42, 42, 1);
+}
+
+.task h1 {
+  font-weight: 600;
+  font-size: 34px;
+  color: rgba(33, 37, 41, 1);
+}
+
+.task p {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
+}
+
+.status {
+  display: flex;
+  position: relative;
+  width: 493px;
+  margin-top: 18px;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 70px;
+  color: rgba(42, 42, 42, 1);
+  width: 234px;
+}
+
+.block {
+  position: absolute;
+  margin-left: 234px;
+}
+
+.employee {
+  display: flex;
+  align-items: center;
+}
+
+.employeeInfo {
+  display: flex;
+  gap: 12px;
+  height: 41px;
+}
+
+.pfp {
+  align-self: end;
+}
+
+.employeeInfoText {
+  display: flex;
+  flex-direction: column;
+}
+
+.employeeInfoText p:first-child {
+  font-weight: 300;
+  font-size: 11px;
+  line-height: 100%;
+  color: rgba(71, 71, 71, 1);
+}
+
+.employeeInfoText p:last-child {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.deadline {
+  display: flex;
+  align-items: center;
+}
+
+.date {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  color: rgba(13, 15, 16, 1);
+}
+
+.addComment {
+  justify-self: center;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 611px;
+  height: 135px;
+  gap: 30px;
+  border-radius: 10px;
+  padding: 18px 20px 15px 20px;
+  border: 0.3px solid rgba(173, 181, 189, 1);
+}
+
+.addComment input {
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+.comments {
+    padding-top: 66px;
+}
+
+.commentsCounter {
+  display: flex;
+  gap: 7px;
+  padding-bottom: 40px;
+}
+
+.commentsCounter h2 {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 100%;
+}
+
+.commentsCounter span {
+  background-color: rgba(131, 56, 236, 1);
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 1);
+  padding: 2.5px 11px;
+  border-radius: 30px;
+}

@@ -15,9 +15,17 @@
   border: 1px solid rgba(222, 226, 230, 1);
   width: fit-content;
   border-radius: 10px;
+  position: relative;
 }
 
 .cards {
   display: flex;
   justify-content: space-between;
+}
+
+.position {
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  margin-top: 50px;
 }
