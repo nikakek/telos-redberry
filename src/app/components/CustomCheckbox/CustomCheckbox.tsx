@@ -1,25 +1,22 @@
 "use client";
-import { useState } from "react";
-import styles from "./CustomCheckbox.module.scss"
+import styles from "./CustomCheckbox.module.scss";
 import clsx from "clsx";
 
 type Props = {
-    color?: "orange" | "pink" | "blue" | "yellow"
-}
+  color?: "orange" | "pink" | "blue" | "yellow";
+  checked?: boolean;
+  onChange?: () => void;
+};
 
 function CustomCheckbox(props: Props) {
-    let colorName: string;
-
-    const [checked, setChecked] = useState(false);
-
-    return (
-        <input
-            type="checkbox"
-            className={clsx(styles.checkbox, props.color && styles[props.color])}
-            checked={checked}
-            onChange={() => setChecked(!checked)}
-        />
-    )
+  return (
+    <input
+      type="checkbox"
+      className={clsx(styles.checkbox, props.color && styles[props.color])}
+      checked={props.checked}
+      onChange={props.onChange}
+    />
+  );
 }
 
 export default CustomCheckbox;

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import CardSection from "../CardSection/CardSection";
 import CoWorker from "../CoWorker/CoWorker";
@@ -7,12 +6,16 @@ import styles from "./MainSection.module.scss";
 import DepartmentsDropdown from "../DepartmentsDropdown/DepartmentsDropdown";
 import PrioritiesDropdown from "../PrioritiesDropdown/PrioritiesDropdown";
 import EmployeesDropdown from "../EmployeesDropdown/EmployeesDropdown";
-import config from "../../Config/Config"; // ✅ import your config file
+import config from "../../Config/Config";
+import Person from "../Person/Person";
 
 function MainSection() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [selectedPriorities, setSelectedPriorities] = useState([]);
 
   const handleDropdownToggle = (dropdown) => {
     setOpenDropdown((prev) => (prev === dropdown ? null : dropdown));
@@ -29,7 +32,6 @@ function MainSection() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // ✅ Fetch tasks from API
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -50,7 +52,47 @@ function MainSection() {
     fetchTasks();
   }, []);
 
+  const handleDepartmentsSelect = (departments) => {
+    console.log("Received departments:", departments);
+    setSelectedDepartments(departments);
+    setOpenDropdown(null);
+  };
+
+  const handleEmployeesSelect = (employees) => {
+    console.log("Received employees:", employees);
+    setSelectedEmployees(employees);
+    setOpenDropdown(null);
+  };
+
+  const handlePrioritiesSelect = (priorities) => {
+    console.log("Received priorities:", priorities);
+    setSelectedPriorities(priorities);
+    setOpenDropdown(null);
+  };
+
   if (loading) return <div>Loading tasks...</div>;
+
+  console.log("Current selectedDepartments:", selectedDepartments);
+  console.log("Current selectedEmployees:", selectedEmployees);
+  console.log("Current selectedPriorities:", selectedPriorities);
+
+  const allSelectedItems = [
+    ...selectedDepartments,
+    ...selectedEmployees,
+    ...selectedPriorities,
+  ];
+
+  // Filter tasks based on selected departments and priorities
+  const filteredTasks =
+    selectedDepartments.length > 0 || selectedPriorities.length > 0
+      ? tasks.filter(
+          (task) =>
+            (selectedDepartments.length === 0 ||
+              selectedDepartments.includes(task.department.name)) &&
+            (selectedPriorities.length === 0 ||
+              selectedPriorities.includes(task.priority.name))
+        )
+      : tasks;
 
   return (
     <div className={styles.mainDiv}>
@@ -63,7 +105,10 @@ function MainSection() {
           }`}
           onClick={() => handleDropdownToggle("departments")}
         >
-          <CoWorker title="დეპარტამენტი" isActive={openDropdown === "departments"} />
+          <CoWorker
+            title="დეპარტამენტი"
+            isActive={openDropdown === "departments"}
+          />
         </div>
         <div
           className={`${styles.button} ${
@@ -71,7 +116,10 @@ function MainSection() {
           }`}
           onClick={() => handleDropdownToggle("priorities")}
         >
-          <CoWorker title="პრიორიტეტი" isActive={openDropdown === "priorities"} />
+          <CoWorker
+            title="პრიორიტეტი"
+            isActive={openDropdown === "priorities"}
+          />
         </div>
         <div
           className={`${styles.button} ${
@@ -79,42 +127,71 @@ function MainSection() {
           }`}
           onClick={() => handleDropdownToggle("employees")}
         >
-          <CoWorker title="თანამშრომელი" isActive={openDropdown === "employees"} />
+          <CoWorker
+            title="თანამშრომელი"
+            isActive={openDropdown === "employees"}
+          />
         </div>
 
         {openDropdown === "departments" && (
           <div className={styles.position}>
-            <DepartmentsDropdown />
+            <DepartmentsDropdown onSelect={handleDepartmentsSelect} />
           </div>
         )}
         {openDropdown === "priorities" && (
           <div className={styles.position}>
-            <PrioritiesDropdown />
+            <PrioritiesDropdown onSelect={handlePrioritiesSelect} />
           </div>
         )}
         {openDropdown === "employees" && (
           <div className={styles.position}>
-            <EmployeesDropdown />
+            <EmployeesDropdown onSelect={handleEmployeesSelect} />
           </div>
+        )}
+      </div>
+
+      <div className={styles.filter}>
+        {allSelectedItems.map((item, index) => (
+          <Person key={index} text={item} />
+        ))}
+        {allSelectedItems.length > 0 && (
+          <button
+            className={styles.filterButton}
+            onClick={() => {
+              setSelectedDepartments([]);
+              setSelectedEmployees([]);
+              setSelectedPriorities([]);
+            }}
+          >
+            გასუფთავება
+          </button>
         )}
       </div>
 
       <div className={styles.cards}>
         <CardSection
           type="starter"
-          tasks={tasks.filter((task) => task.status?.name === "დასაწყები")}
+          tasks={filteredTasks.filter(
+            (task) => task.status?.name === "დასაწყები"
+          )}
         />
         <CardSection
           type="inProgress"
-          tasks={tasks.filter((task) => task.status?.name === "პროგრესში")}
+          tasks={filteredTasks.filter(
+            (task) => task.status?.name === "პროგრესში"
+          )}
         />
         <CardSection
           type="readyForTest"
-          tasks={tasks.filter((task) => task.status?.name === "მზად ტესტირებისთვის")}
+          tasks={filteredTasks.filter(
+            (task) => task.status?.name === "მზად ტესტირებისთვის"
+          )}
         />
         <CardSection
           type="done"
-          tasks={tasks.filter((task) => task.status?.name === "დასრულებული")}
+          tasks={filteredTasks.filter(
+            (task) => task.status?.name === "დასრულებული"
+          )}
         />
       </div>
     </div>

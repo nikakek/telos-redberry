@@ -1,11 +1,11 @@
-// components/Card/Card.tsx
-
+"use client"
 import React from "react";
 import styles from "./Card.module.scss";
 import SizedButton from "../SizedButton/SizedButton";
 import DepartmentsButton from "../DepartmentsButton/DepartmentsButton";
 import clsx from "clsx";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type Department = {
   id: number;
@@ -43,32 +43,56 @@ type TaskData = {
 
 type Props = {
   color: string;
-  lvl: "low" | "medium" | "high";
   taskData: TaskData;
 };
 
-function Card({ color, lvl, taskData }: Props) {
-  let priorityColor: string;
-  switch (lvl) {
-    case "low":
-      priorityColor = "green";
+function Card({ color, taskData }: Props) {
+  const router = useRouter();
+  const priorityName = taskData.priority.name.toLowerCase();
+
+  let priorityLvl: "low" | "medium" | "high" = "low";
+  switch (priorityName) {
+    case "დაბალი":
+      priorityLvl = "low";
       break;
-    case "medium":
-      priorityColor = "darkYellow";
+    case "საშუალო":
+      priorityLvl = "medium";
       break;
-    case "high":
-      priorityColor = "red";
+    case "მაღალი":
+      priorityLvl = "high";
       break;
     default:
-      priorityColor = "grey";
+      priorityLvl = "low";
+      break;
   }
 
+  const handleCardClick = () => {
+    router.push(
+      `/task-details?taskId=${taskData.id}&taskName=${encodeURIComponent(
+        taskData.name
+      )}&taskDescription=${encodeURIComponent(
+        taskData.description
+      )}&taskDueDate=${taskData.due_date}&taskEmployeeName=${encodeURIComponent(
+        taskData.employee.name
+      )}&taskEmployeeSurname=${encodeURIComponent(
+        taskData.employee.surname
+      )}&taskEmployeeAvatar=${encodeURIComponent(
+        taskData.employee.avatar
+      )}&taskPriorityName=${encodeURIComponent(
+        taskData.priority.name
+      )}&taskStatusName=${encodeURIComponent(taskData.status.name)}`
+    );
+  };
+
   return (
-    <div className={clsx(styles.cardDiv, styles[color])}>
+    <div
+      className={clsx(styles.cardDiv, styles[color])}
+      onClick={handleCardClick}
+    >
       <div className={styles.content}>
         <div className={styles.top}>
           <div>
-            <SizedButton lvl={lvl} size="small" />
+            <SizedButton lvl={priorityLvl} size="small" />
             <DepartmentsButton department={taskData.department} />
           </div>
           <span className={styles.date}>
@@ -81,6 +105,7 @@ function Card({ color, lvl, taskData }: Props) {
         </div>
         <div className={styles.bottomDiv}>
           <Image
+            className={styles.avatar}
             src={taskData.employee.avatar}
             width={31}
             height={31}

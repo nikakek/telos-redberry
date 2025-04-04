@@ -1,10 +1,10 @@
-import ColoredButton from "../components/ColoredButton/ColoredButton";
-import SizedButton from "../components/SizedButton/SizedButton";
+import ColoredButton from "../../components/ColoredButton/ColoredButton";
+import SizedButton from "../../components/SizedButton/SizedButton";
 import styles from "./page.module.scss";
 import Image from "next/image";
-import StatusDropdown from "../components/StatusDropdown/StatusDropdown";
-import CustomButton from "../components/CustomButton/CustomButton";
-import Comment from "../components/Comment/Comment"
+import StatusDropdown from "../../components/StatusDropdown/StatusDropdown";
+import CustomButton from "../../components/CustomButton/CustomButton";
+import Comment from "../../components/Comment/Comment";
 
 export default function Home() {
   return (
@@ -42,27 +42,27 @@ export default function Home() {
             </div>
             <div className={styles.employee}>
               <div className={styles.stats}>
-                  <Image
-                    src="../icons/stickman.svg"
-                    width={24}
-                    height={24}
-                    alt="chart"
-                  />
-                  <p>თანამშრომელი</p>
-                  </div>
-                <div className={styles.employeeInfo}>
-                  <Image
-                    src="../images/pfp.svg"
-                    className={styles.pfp}
-                    width={32}
-                    height={32}
-                    alt="pfp"
-                  />
-                  <div className={styles.employeeInfoText}>
-                    <p>დიზაინის დეპარტამენტი</p>
-                    <p>ელაია ბაგრატიონი</p>
-                  </div>
+                <Image
+                  src="../icons/stickman.svg"
+                  width={24}
+                  height={24}
+                  alt="chart"
+                />
+                <p>თანამშრომელი</p>
+              </div>
+              <div className={styles.employeeInfo}>
+                <Image
+                  src="../images/pfp.svg"
+                  className={styles.pfp}
+                  width={32}
+                  height={32}
+                  alt="pfp"
+                />
+                <div className={styles.employeeInfoText}>
+                  <p>დიზაინის დეპარტამენტი</p>
+                  <p>ელაია ბაგრატიონი</p>
                 </div>
+              </div>
             </div>
             <div className={styles.deadline}>
               <div className={styles.stats}>
@@ -79,21 +79,30 @@ export default function Home() {
           </div>
         </div>
         <div className={styles.commentsDiv}>
-            <div className={styles.addComment}>
-                <input type="text" placeholder="დაწერე კომენტარი"/>
-                <div>
-                    <CustomButton background="background" text="დააკომენტარე" border="rounded"/>
-                </div>
+          <div className={styles.addComment}>
+            <input type="text" placeholder="დაწერე კომენტარი" />
+            <div>
+              <CustomButton
+                background="background"
+                text="დააკომენტარე"
+                border="rounded"
+              />
             </div>
-            <div className={styles.comments}>
-                <div className={styles.commentsCounter}>
-                    <h2>კომენტარები</h2>
-                    <span>3</span>
-                </div>
-                <div className={styles.comment}>
-                    <Comment img="../images/pfp.svg" name="ემილია მორგანი" text="gelaasddddddddddddddddddddddddddddddddasdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadddddddd" answer={true} />
-                </div>
+          </div>
+          <div className={styles.comments}>
+            <div className={styles.commentsCounter}>
+              <h2>კომენტარები</h2>
+              <span>3</span>
             </div>
+            <div className={styles.comment}>
+              <Comment
+                img="../images/pfp.svg"
+                name="ემილია მორგანი"
+                text="gelaasddddddddddddddddddddddddddddddddasdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadddddddd"
+                answer={true}
+              />
+            </div>
+          </div>
         </div>
       </section>
     </>

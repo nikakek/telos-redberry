@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import styles from "./SizedButton.module.scss";
 import clsx from "clsx";
@@ -18,22 +19,20 @@ function SizedButton(props: Props) {
   const [priorities, setPriorities] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch the priorities data using config values
     axios
       .get(`${config.serverUrl}/priorities`, {
         headers: {
-          Authorization: `Bearer ${config.token}`, // Add token in the Authorization header
+          Authorization: `Bearer ${config.token}`,
         },
       })
       .then((response) => {
-        setPriorities(response.data); // Store the data in the state
+        setPriorities(response.data);
       })
       .catch((error) => {
         console.error("Error fetching priorities:", error);
       });
   }, []);
 
-  // Set text, img, and color based on the lvl prop and fetched priorities data
   switch (props.lvl) {
     case "high":
       const highPriority = priorities.find((p) => p.name === "High");
@@ -60,7 +59,13 @@ function SizedButton(props: Props) {
 
   return (
     <button className={clsx(styles.button, styles[props.size], styles[color])}>
-      <Image src={img} alt="logo" width={16} height={18} className={styles.img} />
+      <Image
+        src={img}
+        alt="logo"
+        width={16}
+        height={18}
+        className={styles.img}
+      />
       {text}
     </button>
   );

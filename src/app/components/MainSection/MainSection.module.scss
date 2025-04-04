@@ -29,3 +29,22 @@
   width: 100%;
   margin-top: 50px;
 }
+
+.filter {
+  margin-top: 25px;
+  display: flex;
+  gap: 8px;
+}
+
+.filterButton {
+  padding: 6px 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: rgba(2, 21, 38, 0.8);
+}

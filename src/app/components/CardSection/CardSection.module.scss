@@ -2,7 +2,7 @@
 
 .section {
   width: fit-content;
-  margin-top: 79px;
+  margin-top: 24px;
   display: flex;
   justify-content: space-between;
 }
@@ -40,4 +40,8 @@
 
 .blue {
   background-color: $darkBlue;
+}
+
+.noTasks {
+  min-width: 381px;
 }

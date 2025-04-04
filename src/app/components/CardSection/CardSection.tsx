@@ -1,4 +1,3 @@
-
 // components/CardSection/CardSection.tsx
 
 import styles from "./CardSection.module.scss";
@@ -78,7 +77,7 @@ function CardSection({ type, tasks = [] }: Props) {
           <p className={styles.noTasks}>დავალება არ მოიძებნა</p>
         ) : (
           tasks.map((task) => (
-            <Card key={task.id} color={color} lvl="medium" taskData={task} />
+            <Card key={task.id} color={color} taskData={task} />
           ))
         )}
       </div>

@@ -5,6 +5,7 @@
   height: 177px;
   border-radius: 15px;
   padding: 20px;
+  cursor: pointer;
 }
 
 .content {
@@ -82,4 +83,8 @@
 
 .blue {
   border: 1px solid $darkBlue;
+}
+
+.avatar {
+  border-radius: 50%;
 }

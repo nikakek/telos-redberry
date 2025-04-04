@@ -1,24 +1,22 @@
+"use client";
 import styles from "./CustomButton.module.scss";
-import clsx from "clsx";
 
 type Props = {
+  border: "rounded" | "square";
   text: string;
-  background: "background" | "outline";
-  border: "squared" | "rounded";
+  background: "background" | "none";
+  onClick?: () => void;
 };
 
-function CustomButton(props: Props) {
+function CustomButton({ border, text, background, onClick }: Props) {
   return (
     <button
-      className={clsx(
-        styles.button,
-        styles[props.background],
-        styles[props.border]
-      )}
+      className={`${styles.button} ${styles[border]} ${styles[background]}`}
+      onClick={onClick}
     >
-      {props.text}
+      {text}
     </button>
-  )
+  );
 }
 
 export default CustomButton;
