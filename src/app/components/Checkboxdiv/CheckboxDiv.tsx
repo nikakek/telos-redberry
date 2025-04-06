@@ -13,7 +13,7 @@ type Props = {
 
 function CheckboxDiv(props: Props) {
   const image = (img: string) => {
-    return <Image src={img} width={28} height={28} alt="pfp" />;
+    return <Image className={styles.photo} src={img} width={28} height={28} alt="pfp" />;
   };
 
   return (

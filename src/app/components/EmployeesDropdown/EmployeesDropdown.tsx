@@ -10,7 +10,7 @@ import Image from "next/image";
 function EmployeesDropdown({ onSelect }) {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
 
   useEffect(() => {
     axios

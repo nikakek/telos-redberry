@@ -8,22 +8,35 @@ import PrioritiesDropdown from "../PrioritiesDropdown/PrioritiesDropdown";
 import EmployeesDropdown from "../EmployeesDropdown/EmployeesDropdown";
 import config from "../../Config/Config";
 import Person from "../Person/Person";
+import AddEmployee from "../AddEmployee/AddEmployee"; // Keep the import for AddEmployee
 
-function MainSection() {
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [selectedPriorities, setSelectedPriorities] = useState([]);
+interface MainSectionProps {
+  isAddEmployeeOpen: boolean;
+  setIsAddEmployeeOpen: (open: boolean) => void;
+  handleEmployeeAdded: () => void;
+  refreshEmployeesTrigger: number;
+}
 
-  const handleDropdownToggle = (dropdown) => {
+function MainSection({
+  isAddEmployeeOpen,
+  setIsAddEmployeeOpen,
+  handleEmployeeAdded,
+  refreshEmployeesTrigger,
+}: MainSectionProps) {
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+
+  const handleDropdownToggle = (dropdown: string | null) => {
     setOpenDropdown((prev) => (prev === dropdown ? null : dropdown));
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(`.${styles.dropDown}`)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!(event.target as Element).closest(`.${styles.dropDown}`)) {
         setOpenDropdown(null);
       }
     };
@@ -40,7 +53,11 @@ function MainSection() {
             Authorization: `Bearer ${config.token}`,
           },
         });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch tasks: ${response.status}`);
+        }
         const data = await response.json();
+        console.log("Fetched tasks:", data);
         setTasks(data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -52,19 +69,19 @@ function MainSection() {
     fetchTasks();
   }, []);
 
-  const handleDepartmentsSelect = (departments) => {
+  const handleDepartmentsSelect = (departments: string[]) => {
     console.log("Received departments:", departments);
     setSelectedDepartments(departments);
     setOpenDropdown(null);
   };
 
-  const handleEmployeesSelect = (employees) => {
+  const handleEmployeesSelect = (employees: string[]) => {
     console.log("Received employees:", employees);
     setSelectedEmployees(employees);
     setOpenDropdown(null);
   };
 
-  const handlePrioritiesSelect = (priorities) => {
+  const handlePrioritiesSelect = (priorities: string[]) => {
     console.log("Received priorities:", priorities);
     setSelectedPriorities(priorities);
     setOpenDropdown(null);
@@ -82,15 +99,18 @@ function MainSection() {
     ...selectedPriorities,
   ];
 
-  // Filter tasks based on selected departments and priorities
   const filteredTasks =
-    selectedDepartments.length > 0 || selectedPriorities.length > 0
+    selectedDepartments.length > 0 ||
+    selectedEmployees.length > 0 ||
+    selectedPriorities.length > 0
       ? tasks.filter(
           (task) =>
             (selectedDepartments.length === 0 ||
-              selectedDepartments.includes(task.department.name)) &&
+              selectedDepartments.includes(task.department?.name)) &&
+            (selectedEmployees.length === 0 ||
+              selectedEmployees.includes(task.employee?.name)) &&
             (selectedPriorities.length === 0 ||
-              selectedPriorities.includes(task.priority.name))
+              selectedPriorities.includes(task.priority?.name))
         )
       : tasks;
 
@@ -145,7 +165,10 @@ function MainSection() {
         )}
         {openDropdown === "employees" && (
           <div className={styles.position}>
-            <EmployeesDropdown onSelect={handleEmployeesSelect} />
+            <EmployeesDropdown
+              onSelect={handleEmployeesSelect}
+              refreshTrigger={refreshEmployeesTrigger}
+            />
           </div>
         )}
       </div>
@@ -194,6 +217,14 @@ function MainSection() {
           )}
         />
       </div>
+
+      {/* Add Employee Modal */}
+      {isAddEmployeeOpen && (
+        <AddEmployee
+          onClose={() => setIsAddEmployeeOpen(false)}
+          onEmployeeAdded={handleEmployeeAdded}
+        />
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import styles from "./CustomButton.module.scss";
 type Props = {
   border: "rounded" | "square";
   text: string;
-  background: "background" | "none";
+  background: "background" | "outline";
   onClick?: () => void;
 };
 

@@ -1,0 +1,211 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(13, 15, 16, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+  }
+  
+  .container {
+    position: fixed;
+    margin-top: 118px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    width: 813px;
+    border-radius: 10px;
+    padding: 40px 50px 60px 50px;
+  }
+  
+  .exitButton {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    cursor: pointer;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    margin-top: 77px;
+    color: rgba(33, 37, 41, 1);
+  }
+  
+  .infoDiv {
+    display: flex;
+    justify-content: center;
+    margin-top: 45px;
+  }
+  
+  .form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+    background-color: transparent;
+  }
+  
+  .nameSurname {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 384px;
+    label {
+      color: rgba(52, 58, 64, 1);
+      font-family: FiraGO;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 100%;
+      letter-spacing: 0%;
+    }
+  
+    input {
+      width: 384px;
+    }
+  
+    input,
+    select {
+      padding: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  }
+  
+  .avatarUploadWrapper {
+    position: relative;
+    width: 813px;
+    height: 120px;
+    border-radius: 8px; 
+    border: 1px dashed #ccc; 
+    background-color: #f8f9fa; 
+    display: flex;
+  }
+  
+  .avatarPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px; 
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    grid: 5px;
+  
+    span {
+      color: rgba(52, 58, 64, 1);
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+  
+  .avatarInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .avatarPreview {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center; 
+  }
+  
+  .avatarImage {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 88px;
+    height: 88px;
+    margin: auto;
+  }
+  
+  .removeAvatarButton {
+    position: absolute;
+    top: 83px;
+    left: 430px; 
+    background: #fff;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    
+  }
+  
+  .validationMessages {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .validationMessage {
+    font-size: 12px;
+  
+    &.red {
+      color: red;
+    }
+  
+    &.green {
+      color: green;
+    }
+  
+    &.gray {
+      color: gray;
+    }
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+  
+    button {
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  
+    .cancelButton {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      color: #333;
+    }
+  
+    .submitButton {
+      background-color: #6b48ff;
+      border: none;
+      color: #fff;
+    }
+  }
