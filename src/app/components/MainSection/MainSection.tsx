@@ -6,9 +6,9 @@ import styles from "./MainSection.module.scss";
 import DepartmentsDropdown from "../DepartmentsDropdown/DepartmentsDropdown";
 import PrioritiesDropdown from "../PrioritiesDropdown/PrioritiesDropdown";
 import EmployeesDropdown from "../EmployeesDropdown/EmployeesDropdown";
-import config from "../../Config/Config";
 import Person from "../Person/Person";
-import AddEmployee from "../AddEmployee/AddEmployee"; // Keep the import for AddEmployee
+import AddEmployee from "../AddEmployee/AddEmployee";
+import { useTasks } from "../contexts/TaskContext";
 
 interface MainSectionProps {
   isAddEmployeeOpen: boolean;
@@ -24,11 +24,18 @@ function MainSection({
   refreshEmployeesTrigger,
 }: MainSectionProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const { tasks } = useTasks();
+
+  useEffect(() => {
+    console.log("Tasks in MainSection:", tasks);
+    if (tasks.length > 0) {
+      setLoading(false);
+    }
+  }, [tasks]);
 
   const handleDropdownToggle = (dropdown: string | null) => {
     setOpenDropdown((prev) => (prev === dropdown ? null : dropdown));
@@ -45,58 +52,27 @@ function MainSection({
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch(`${config.serverUrl}/tasks`, {
-          headers: {
-            Authorization: `Bearer ${config.token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error(`Failed to fetch tasks: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Fetched tasks:", data);
-        setTasks(data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
   const handleDepartmentsSelect = (departments: string[]) => {
-    console.log("Received departments:", departments);
     setSelectedDepartments(departments);
     setOpenDropdown(null);
   };
 
   const handleEmployeesSelect = (employees: string[]) => {
-    console.log("Received employees:", employees);
     setSelectedEmployees(employees);
     setOpenDropdown(null);
   };
 
   const handlePrioritiesSelect = (priorities: string[]) => {
-    console.log("Received priorities:", priorities);
     setSelectedPriorities(priorities);
     setOpenDropdown(null);
   };
 
   if (loading) return <div>Loading tasks...</div>;
 
-  console.log("Current selectedDepartments:", selectedDepartments);
-  console.log("Current selectedEmployees:", selectedEmployees);
-  console.log("Current selectedPriorities:", selectedPriorities);
-
   const allSelectedItems = [
-    ...selectedDepartments,
-    ...selectedEmployees,
-    ...selectedPriorities,
+    ...selectedDepartments.map((value) => ({ type: "department", value })),
+    ...selectedEmployees.map((value) => ({ type: "employee", value })),
+    ...selectedPriorities.map((value) => ({ type: "priority", value })),
   ];
 
   const filteredTasks =
@@ -108,11 +84,27 @@ function MainSection({
             (selectedDepartments.length === 0 ||
               selectedDepartments.includes(task.department?.name)) &&
             (selectedEmployees.length === 0 ||
-              selectedEmployees.includes(task.employee?.name)) &&
+              selectedEmployees.includes(
+                `${task.employee?.name} ${task.employee?.surname}`
+              )) &&
             (selectedPriorities.length === 0 ||
               selectedPriorities.includes(task.priority?.name))
         )
       : tasks;
+
+  const handleRemoveItem = (type: string, value: string) => {
+    switch (type) {
+      case "department":
+        setSelectedDepartments((prev) => prev.filter((d) => d !== value));
+        break;
+      case "employee":
+        setSelectedEmployees((prev) => prev.filter((e) => e !== value));
+        break;
+      case "priority":
+        setSelectedPriorities((prev) => prev.filter((p) => p !== value));
+        break;
+    }
+  };
 
   return (
     <div className={styles.mainDiv}>
@@ -175,7 +167,11 @@ function MainSection({
 
       <div className={styles.filter}>
         {allSelectedItems.map((item, index) => (
-          <Person key={index} text={item} />
+          <Person
+            key={index}
+            text={item.value}
+            onRemove={() => handleRemoveItem(item.type, item.value)}
+          />
         ))}
         {allSelectedItems.length > 0 && (
           <button
@@ -193,24 +189,28 @@ function MainSection({
 
       <div className={styles.cards}>
         <CardSection
+          key={`starter-${tasks.length}`}
           type="starter"
           tasks={filteredTasks.filter(
             (task) => task.status?.name === "დასაწყები"
           )}
         />
         <CardSection
+          key={`inProgress-${tasks.length}`}
           type="inProgress"
           tasks={filteredTasks.filter(
             (task) => task.status?.name === "პროგრესში"
           )}
         />
         <CardSection
+          key={`readyForTest-${tasks.length}`}
           type="readyForTest"
           tasks={filteredTasks.filter(
             (task) => task.status?.name === "მზად ტესტირებისთვის"
           )}
         />
         <CardSection
+          key={`done-${tasks.length}`}
           type="done"
           tasks={filteredTasks.filter(
             (task) => task.status?.name === "დასრულებული"
@@ -218,7 +218,6 @@ function MainSection({
         />
       </div>
 
-      {/* Add Employee Modal */}
       {isAddEmployeeOpen && (
         <AddEmployee
           onClose={() => setIsAddEmployeeOpen(false)}

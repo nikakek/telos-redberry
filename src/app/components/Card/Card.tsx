@@ -39,6 +39,7 @@ type TaskData = {
   employee: Employee;
   status: Status;
   priority: Priority;
+  comments?: number;
 };
 
 type Props = {
@@ -87,6 +88,8 @@ function Card({ color, taskData }: Props) {
     );
   };
 
+  const commentCount = taskData.comments ?? 0;
+
   return (
     <div className={clsx(styles.cardDiv, styles[color])}>
       <div className={styles.content}>
@@ -118,7 +121,7 @@ function Card({ color, taskData }: Props) {
               height={22}
               alt="comments"
             />
-            <p>8</p>
+            <p>{commentCount}</p>
           </div>
         </div>
       </div>

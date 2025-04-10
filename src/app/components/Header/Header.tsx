@@ -5,9 +5,11 @@ import styles from "./Header.module.scss";
 import Image from "next/image";
 import { useState } from "react";
 import AddEmployee from "../AddEmployee/AddEmployee";
+import { useRouter } from "next/navigation";
 
 function Header() {
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const router = useRouter();
 
   const openForm = () => {
     setIsFormVisible(true);
@@ -17,13 +19,17 @@ function Header() {
     setIsFormVisible(false);
   };
 
+  const handleAddTask = () => {
+    router.push("/Add-task");
+  };
+
   return (
     <>
       <header className={styles.header}>
         <div className={styles.div}>
           <Link href="/">
             <Image
-              src="./images/headerLogo.svg"
+              src="/images/headerLogo.svg"
               width={210}
               height={38}
               alt="logo"
@@ -40,6 +46,7 @@ function Header() {
               text="+ შექმენი ახალი დავალება"
               background="background"
               border="square"
+              onClick={handleAddTask}
             />
           </div>
         </div>

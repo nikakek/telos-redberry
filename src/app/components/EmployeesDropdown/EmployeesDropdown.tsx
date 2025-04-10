@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "../DepartmentsDropdown/DepartmentsDropdown.module.scss"; // Reusing styles
+import styles from "../DepartmentsDropdown/DepartmentsDropdown.module.scss";
 import CheckboxDiv from "../Checkboxdiv/CheckboxDiv";
 import CustomButton from "../CustomButton/CustomButton";
 import config from "../../Config/Config";
@@ -38,7 +38,7 @@ function EmployeesDropdown({ onSelect }) {
   };
 
   const handleSelect = () => {
-    console.log("Selected employees:", selectedEmployees); // Debug
+    console.log("Selected employees:", selectedEmployees);
     onSelect(selectedEmployees);
   };
 
@@ -52,8 +52,8 @@ function EmployeesDropdown({ onSelect }) {
             content.map((item, index) => (
               <CheckboxDiv
                 key={index}
-                img={item.avatar} // Pass avatar to CheckboxDiv
-                text={`${item.name} ${item.surname}`} // Combine name and surname
+                img={item.avatar}
+                text={`${item.name} ${item.surname}`}
                 checked={selectedEmployees.includes(
                   `${item.name} ${item.surname}`
                 )}
