@@ -1,0 +1,83 @@
+@import "../../Colors.module.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  border: 1px solid rgba(222, 226, 230, 1);
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.left {
+  display: flex;
+  gap: 6px;
+}
+
+.arrow {
+  display: flex;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  span {
+    margin-left: 8px;
+  }
+}
+
+.arrow {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  width: 231px;
+  flex-direction: row;
+  height: 46px;
+  gap: 6px;
+  display: flex;
+
+  align-items: center;
+  padding: 0 14px;
+
+  span {
+    margin-left: 8px;
+  }
+}
+
+.beforeDrop {
+  width: fit-content;
+  display: flex;
+  width: 231px;
+  height: 46px;
+  border-radius: 5px;
+  border-width: 1px;
+  gap: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 14px;
+}
+
+.containerActive {
+  border-color: $purple;
+}

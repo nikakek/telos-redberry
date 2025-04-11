@@ -5,7 +5,6 @@ import styles from "../DepartmentsDropdown/DepartmentsDropdown.module.scss";
 import CheckboxDiv from "../Checkboxdiv/CheckboxDiv";
 import CustomButton from "../CustomButton/CustomButton";
 import config from "../../Config/Config";
-import Image from "next/image";
 
 function EmployeesDropdown({ onSelect }) {
   const [content, setContent] = useState([]);

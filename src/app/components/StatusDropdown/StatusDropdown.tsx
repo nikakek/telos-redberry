@@ -8,17 +8,27 @@ interface StatusDropdownProps {
   onStatusChange: (newStatus: string) => void;
 }
 
-const statusOptions = ["დასაწყები", "პროგრესში", "მზად ტესტირებისთვის", "დასრულებული"];
+const statusOptions = [
+  "დასაწყები",
+  "პროგრესში",
+  "მზად ტესტირებისთვის",
+  "დასრულებული",
+];
 
-export default function StatusDropdown({ initialStatus, onStatusChange }: StatusDropdownProps) {
+export default function StatusDropdown({
+  initialStatus,
+  onStatusChange,
+}: StatusDropdownProps) {
   const [selected, setSelected] = useState(initialStatus);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -39,7 +49,10 @@ export default function StatusDropdown({ initialStatus, onStatusChange }: Status
   };
 
   return (
-    <div className={clsx(styles.container, { [styles.border]: isOpen })} ref={dropdownRef}>
+    <div
+      className={clsx(styles.container, { [styles.border]: isOpen })}
+      ref={dropdownRef}
+    >
       <div className={styles.button} onClick={() => setIsOpen(!isOpen)}>
         <p>{selected}</p>
       </div>

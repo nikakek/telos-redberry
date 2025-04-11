@@ -13,7 +13,6 @@ import DepartmentsButton from "@/app/components/DepartmentsButton/DepartmentsBut
 import Header from "@/app/components/Header/Header";
 import { useTasks } from "../../components/contexts/TaskContext";
 
-// Map Georgian status names to server-expected status IDs
 const statusIdMap: { [key: string]: number } = {
   "დასაწყები": 1, // "To Do"
   "პროგრესში": 2, // "In Progress"

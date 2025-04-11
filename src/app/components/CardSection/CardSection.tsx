@@ -1,5 +1,3 @@
-// components/CardSection/CardSection.tsx
-
 import styles from "./CardSection.module.scss";
 import clsx from "clsx";
 import Card from "../Card/Card";
@@ -40,7 +38,7 @@ type TaskData = {
 
 type Props = {
   type: "starter" | "inProgress" | "readyForTest" | "done";
-  tasks?: TaskData[]; // Optional
+  tasks?: TaskData[];
 };
 
 function CardSection({ type, tasks = [] }: Props) {

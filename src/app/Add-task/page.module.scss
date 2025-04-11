@@ -1,3 +1,5 @@
+@import "../Colors.module.scss";
+
 .section {
   margin-top: 40px;
 }
@@ -27,10 +29,8 @@
   gap: 161px;
 }
 
-
 .section {
   padding: 20px;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -38,32 +38,35 @@
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  text-align: center;
 }
 
 .container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .filters {
   display: flex;
   width: 100%;
   max-width: 800px;
-  gap: 20px;
+  gap: 161px;
+  width: 550px;
+  height: 491px;
 }
 
 .leftFilter {
   flex: 1;
-  background: #fff;
-  padding: 20px;
+  padding: 20px 0;
+  padding-left: 55px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 55px;
 
   form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 55px;
   }
 
   label {
@@ -75,8 +78,9 @@
 
   input,
   textarea {
-    width: 100%;
-    padding: 10px;
+    width: 522px;
+    height: 17px;
+    padding: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
@@ -84,7 +88,7 @@
     transition: border-color 0.2s;
 
     &:focus {
-      border-color: #007bff;
+      border-color: $purple;
     }
   }
 
@@ -122,7 +126,6 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      background: #fff;
       font-size: 14px;
 
       &.active {
@@ -198,4 +201,54 @@
 
 .rightFilter {
   flex: 1;
+}
+
+.priorityDropdown {
+  display: block;
+  margin-top: 100px;
+}
+
+.dropdowns {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters {
+  margin-top: 45px;
+}
+
+.rightFilter {
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+  }
+}
+
+.departmentDropdownDiv {
+  margin-top: 17px;
+}
+
+.employeeDropdownDiv {
+  margin-top: 82px;
+}
+
+.calendar {
+  margin-top: 145px;
+}
+
+.calendar input {
+  width: 290px;
+  height: 17px;
+  border-radius: 5px;
+  border-width: 1px;
+  gap: 6px;
+  padding: 14px;
+  font-family: FiraGO;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -1.25%;
+  color: rgba(173, 181, 189, 1);
 }
