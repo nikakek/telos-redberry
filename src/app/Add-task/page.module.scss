@@ -51,17 +51,17 @@
   max-width: 800px;
   gap: 161px;
   width: 550px;
-  height: 491px;
+  height: 491px;;
 }
 
 .leftFilter {
   flex: 1;
-  padding: 20px 0;
   padding-left: 55px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 55px;
+  height: 491px;
+  justify-content: space-between;
 
   form {
     display: flex;
@@ -177,30 +177,15 @@
     margin-top: 10px;
     text-align: center;
   }
-
-  .submitButton {
-    padding: 10px 20px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s;
-
-    &:hover {
-      background: #0056b3;
-    }
-
-    &:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-  }
 }
 
 .rightFilter {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 491px;
+  justify-content: space-between;
+  border-radius: 8px;
 }
 
 .priorityDropdown {
@@ -227,16 +212,21 @@
 }
 
 .departmentDropdownDiv {
-  margin-top: 17px;
+  position: absolute;
+  z-index: 1000;
 }
 
 .employeeDropdownDiv {
-  margin-top: 82px;
+  position: absolute;
+  z-index: 100;
+  margin-top: 177px;
 }
 
 .calendar {
-  margin-top: 145px;
+  margin-top: 425px;
+  position: relative;
 }
+
 
 .calendar input {
   width: 290px;
@@ -250,5 +240,75 @@
   font-size: 14px;
   line-height: 20px;
   letter-spacing: -1.25%;
-  color: rgba(173, 181, 189, 1);
+  color: rgba(173, 181, 189, 1);  
+  border: 1px solid rgba(222, 226, 230, 1);
+}
+
+.calendarIcon{
+  margin-left: 14px;
+  position: absolute;
+  margin-top: 16px;
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.dateInput.dateInput::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.dateInput {
+  color: transparent;
+}
+
+
+.dateInput:focus {
+  color: initial;
+}
+
+.calendar input[type="date"] {
+  color: transparent; 
+}
+
+.dateDisplay {
+  position: absolute;
+  margin-left: -285px;
+  margin-top: 17px;
+}
+
+.submitButton {
+  background-color: rgba(131, 56, 236, 1);
+    width: 208px;
+  height: 42px;
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 1);
+  font-family: FiraGO;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  border: none;
+  margin-right: 330px;
+}
+
+.submitButtonContainer {
+  margin-top: 145px;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
+.aboutFilter textarea{
+  height: 105px;
+}
+
+.form {
+  width: 100%;
 }

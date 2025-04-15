@@ -136,18 +136,17 @@ function AddTask() {
     initialValues,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        // Transform the form data to match the API structure
         const payload = {
           name: values.name,
           description: values.description,
-          due_date: values.due_date || null, // API might expect null if not provided
+          due_date: values.due_date || null,
           status: {
-            id: 1, // Replace with actual ID from StatusDropdownAdd
+            id: 1,
             name: values.status,
           },
           priority: {
-            id: 1, // Replace with actual ID from PriorityDropdown
-            name: values.priority || "High", // Fallback if not set
+            id: 1, 
+            name: values.priority || "High",
           },
           department: {
             id: 1,
@@ -155,9 +154,9 @@ function AddTask() {
           },
           employee: {
             id: 1,
-            name: values.employee.split(" ")[0] || values.employee, 
-            surname: values.employee.split(" ")[1] || "", 
-            department_id: 1, 
+            name: values.employee.split(" ")[0] || values.employee,
+            surname: values.employee.split(" ")[1] || "",
+            department_id: 1,
           },
         };
 
@@ -179,7 +178,6 @@ function AddTask() {
         const result = await response.json();
         console.log("Task submitted successfully:", result);
 
-        // Reset the form after successful submission
         resetForm();
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -197,7 +195,7 @@ function AddTask() {
     <section className={styles.section}>
       <h1 className={styles.title}>შექმენი ახალი დავალება</h1>
       <div className={styles.container}>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} className={styles.form}>
           <div className={styles.filters}>
             <div className={styles.leftFilter}>
               <div className={styles.titleFilter}>
@@ -239,11 +237,13 @@ function AddTask() {
               <div className={styles.dropdowns}>
                 <div>
                   <label>პრიორიტეტი*</label>
-                  <PriorityDropdown
-                    onPriorityChange={(newPriority: string) =>
-                      formik.setFieldValue("priority", newPriority)
-                    }
-                  />
+                  <div className={styles.priorityDropdownDiv}>
+                    <PriorityDropdown
+                      onPriorityChange={(newPriority: string) =>
+                        formik.setFieldValue("priority", newPriority)
+                      }
+                    />
+                  </div>
                   {formik.errors.priority && formik.touched.priority && (
                     <div className={styles.errorMessage}>
                       {formik.errors.priority}
@@ -252,12 +252,14 @@ function AddTask() {
                 </div>
                 <div>
                   <label>სტატუსი*</label>
-                  <StatusDropdownAdd
-                    initialStatus={formik.values.status}
-                    onStatusChange={(newStatus: string) =>
-                      formik.setFieldValue("status", newStatus)
-                    }
-                  />
+                  <div className={styles.priorityDropdownDiv}>
+                    <StatusDropdownAdd
+                      initialStatus={formik.values.status}
+                      onStatusChange={(newStatus: string) =>
+                        formik.setFieldValue("status", newStatus)
+                      }
+                    />
+                  </div>
                   {formik.errors.status && formik.touched.status && (
                     <div className={styles.errorMessage}>
                       {formik.errors.status}
