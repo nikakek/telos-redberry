@@ -103,7 +103,7 @@ function MainSection({
         setSelectedEmployees((prev) => prev.filter((e) => e !== value));
         break;
       case "priority":
-        setSelectedPriorities((prev) => prev.filter((p) => e !== value));
+        setSelectedPriorities((prev) => prev.filter((p) => p !== value));
         break;
     }
   };

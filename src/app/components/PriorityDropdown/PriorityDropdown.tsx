@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import styles from "./PriorityDropdown.module.scss"; 
+import styles from "./PriorityDropdown.module.scss";
 import Image from "next/image";
 import clsx from "clsx";
 import { useTasks } from "../contexts/TaskContext";
@@ -9,19 +9,24 @@ interface PriorityDropdownProps {
   onPriorityChange: (newPriority: string) => void;
 }
 
-export default function PriorityDropdown({ onPriorityChange }: PriorityDropdownProps) {
+export default function PriorityDropdown({
+  onPriorityChange,
+}: PriorityDropdownProps) {
   const { priorities } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedPriority, setSelectedPriority] = useState<string>("საშუალო"); 
+  const [selectedPriority, setSelectedPriority] = useState<string>("საშუალო");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     onPriorityChange("საშუალო");
-  }, []); 
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -49,9 +54,16 @@ export default function PriorityDropdown({ onPriorityChange }: PriorityDropdownP
   };
 
   return (
-    <div className={styles.container} ref={dropdownRef}>
+    <div
+      className={clsx(styles.container, {
+        [styles.containerActive]: isOpen,
+      })}
+      ref={dropdownRef}
+    >
       <div
-        className={clsx(styles.beforeDrop, { [styles.containerActive]: isOpen })}
+        className={clsx(styles.beforeDrop, {
+          [styles.beforeDropOpen]: isOpen,
+        })}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedPriority ? (

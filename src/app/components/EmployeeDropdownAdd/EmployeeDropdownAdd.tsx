@@ -10,7 +10,10 @@ interface EmployeesDropdownAddProps {
   onEmployeeChange: (newEmployee: string) => void;
 }
 
-function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDropdownAddProps) {
+function EmployeesDropdownAdd({
+  initialEmployee,
+  onEmployeeChange,
+}: EmployeesDropdownAddProps) {
   const { employees } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(initialEmployee);
@@ -18,7 +21,10 @@ function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDr
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -27,7 +33,6 @@ function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDr
   }, []);
 
   useEffect(() => {
-    // Only update if initialEmployee has changed
     if (selectedEmployee !== initialEmployee) {
       setSelectedEmployee(initialEmployee);
     }
@@ -39,27 +44,36 @@ function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDr
     setIsOpen(false);
   };
 
+  const selectedEmpObj = employees.find(
+    (emp) => `${emp.name} ${emp.surname || ""}` === selectedEmployee
+  );
+
+  const selectedAvatar =
+    selectedEmpObj?.avatar || "/icons/avatar-placeholder.svg";
+
   return (
     <div className={styles.container} ref={dropdownRef}>
       <div
-        className={clsx(styles.beforeDrop, { [styles.containerActive]: isOpen })}
+        className={clsx(styles.beforeDrop, {
+          [styles.beforeDropOpen]: isOpen,
+        })}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className={styles.left}>
           {selectedEmployee && (
             <Image
-              src="/icons/avatar-placeholder.svg" // Replace with emp.avatar if available
+              src={selectedAvatar}
               width={24}
               height={24}
               alt="Employee Avatar"
               className={styles.avatar}
             />
           )}
-          <span>{selectedEmployee || "აირჩიეთ თანამშრომელი"}</span>
+          <span>{selectedEmployee || ""}</span>
         </div>
         <div className={styles.arrow}>
           <Image
-            src="../icons/arrowDown.svg"
+            src="/icons/arrowDown.svg"
             width={14}
             height={14}
             alt="Dropdown Arrow"
@@ -68,7 +82,11 @@ function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDr
         </div>
       </div>
       {isOpen && (
-        <div className={clsx(styles.dropdownContent, { [styles.dropdownContentActive]: isOpen })}>
+        <div
+          className={clsx(styles.dropdownContent, {
+            [styles.dropdownContentActive]: isOpen,
+          })}
+        >
           {employees.map((emp) => {
             const employeeName = `${emp.name} ${emp.surname || ""}`;
             return (
@@ -80,7 +98,7 @@ function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDr
                 onClick={() => handleSelect(employeeName)}
               >
                 <Image
-                  src={emp.avatar || "/icons/avatar-placeholder.svg"} // Use emp.avatar if available
+                  src={emp.avatar || "/icons/avatar-placeholder.svg"}
                   width={24}
                   height={24}
                   alt={`${employeeName} Avatar`}

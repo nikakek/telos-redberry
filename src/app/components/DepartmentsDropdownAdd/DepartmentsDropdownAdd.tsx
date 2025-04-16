@@ -10,15 +10,22 @@ interface DepartmentsDropdownAddProps {
   onDepartmentChange: (newDepartment: string) => void;
 }
 
-function DepartmentsDropdownAdd({ initialDepartment, onDepartmentChange }: DepartmentsDropdownAddProps) {
+function DepartmentsDropdownAdd({
+  initialDepartment,
+  onDepartmentChange,
+}: DepartmentsDropdownAddProps) {
   const { departments } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState(initialDepartment);
+  const [selectedDepartment, setSelectedDepartment] =
+    useState(initialDepartment);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -27,7 +34,6 @@ function DepartmentsDropdownAdd({ initialDepartment, onDepartmentChange }: Depar
   }, []);
 
   useEffect(() => {
-    // Only update if initialDepartment has changed
     if (selectedDepartment !== initialDepartment) {
       setSelectedDepartment(initialDepartment);
     }
@@ -42,7 +48,9 @@ function DepartmentsDropdownAdd({ initialDepartment, onDepartmentChange }: Depar
   return (
     <div className={styles.container} ref={dropdownRef}>
       <div
-        className={clsx(styles.beforeDrop, { [styles.containerActive]: isOpen })}
+        className={clsx(styles.beforeDrop, {
+          [styles.beforeDropOpen]: isOpen,
+        })}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className={styles.left}>
@@ -59,7 +67,11 @@ function DepartmentsDropdownAdd({ initialDepartment, onDepartmentChange }: Depar
         </div>
       </div>
       {isOpen && (
-        <div className={clsx(styles.dropdownContent, { [styles.dropdownContentActive]: isOpen })}>
+        <div
+          className={clsx(styles.dropdownContent, {
+            [styles.dropdownContentActive]: isOpen,
+          })}
+        >
           {departments.map((dept) => (
             <div
               key={dept.id}

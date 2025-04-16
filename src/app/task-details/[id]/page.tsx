@@ -12,10 +12,10 @@ import { useTasks } from "../../components/contexts/TaskContext";
 import config from "../../Config/Config";
 
 const statusIdMap: { [key: string]: number } = {
-  "დასაწყები": 1,
-  "პროგრესში": 2,
+  დასაწყები: 1,
+  პროგრესში: 2,
   "მზად ტესტირებისთვის": 3,
-  "დასრულებული": 4,
+  დასრულებული: 4,
 };
 
 const statusIdToNameMap: { [key: number]: string } = {
@@ -28,7 +28,15 @@ const statusIdToNameMap: { [key: number]: string } = {
 export default function TaskDetails() {
   const { id } = useParams();
   const router = useRouter();
-  const { tasks, updateTaskStatus, updateTaskComments, fetchCommentsForTask, loading, error, statuses } = useTasks();
+  const {
+    tasks,
+    updateTaskStatus,
+    updateTaskComments,
+    fetchCommentsForTask,
+    loading,
+    error,
+    statuses,
+  } = useTasks();
 
   const taskId = parseInt(id as string);
   const task = tasks.find((t) => t.id === taskId);
@@ -37,12 +45,16 @@ export default function TaskDetails() {
   const [statusError, setStatusError] = useState<string | null>(null);
   const hasFetchedComments = useRef(false);
 
+  // Redirect if task is not found
+  useEffect(() => {
+    if (!loading && !error && !task) {
+      router.push("/");
+    }
+  }, [loading, error, task, router]);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!task) {
-    router.push("/"); // Redirect to main page if task not found
-    return null;
-  }
+  if (!task) return null; // Render nothing while redirecting
 
   const priorityLvl =
     task.priority.name === "Low"
@@ -54,7 +66,14 @@ export default function TaskDetails() {
       : "low";
 
   const [comments, setComments] = useState<
-    { id: number; name: string; text: string; img: string | undefined; answer: boolean; parent_id: number | null }[]
+    {
+      id: number;
+      name: string;
+      text: string;
+      img: string | undefined;
+      answer: boolean;
+      parent_id: number | null;
+    }[]
   >([]);
   const [newComment, setNewComment] = useState("");
   const [replyText, setReplyText] = useState("");
@@ -64,18 +83,21 @@ export default function TaskDetails() {
 
   useEffect(() => {
     const loadComments = async () => {
-      if (hasFetchedComments.current) return; // Skip if already fetched
+      if (hasFetchedComments.current || task.commentDetails) return;
       setCommentsLoading(true);
       await fetchCommentsForTask(taskId);
       setCommentsLoading(false);
       hasFetchedComments.current = true;
     };
     loadComments();
-  }, [taskId, fetchCommentsForTask]);
+  }, [taskId, fetchCommentsForTask, task.commentDetails]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (replyInputRef.current && !replyInputRef.current.contains(event.target as Node)) {
+      if (
+        replyInputRef.current &&
+        !replyInputRef.current.contains(event.target as Node)
+      ) {
         setReplyingTo(null);
         setReplyText("");
       }
@@ -91,7 +113,14 @@ export default function TaskDetails() {
   }, [replyingTo]);
 
   const flattenComments = (commentsData: any[]) => {
-    const flattened: { id: number; name: string; text: string; img: string; answer: boolean; parent_id: number | null }[] = [];
+    const flattened: {
+      id: number;
+      name: string;
+      text: string;
+      img: string;
+      answer: boolean;
+      parent_id: number | null;
+    }[] = [];
     commentsData.forEach((comment) => {
       flattened.push({
         id: comment.id || 0,
@@ -140,7 +169,6 @@ export default function TaskDetails() {
       return;
     }
 
-    // Validate status_id against available statuses from the server
     const validStatus = statuses.find((status) => status.id === serverStatusId);
     if (!validStatus) {
       console.error(`Status ID ${serverStatusId} does not exist on the server`);
@@ -161,16 +189,20 @@ export default function TaskDetails() {
 
     if (isNaN(taskId)) return;
 
-    const response = await fetch(`${config.serverUrl}/tasks/${taskId}/comments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.token}` },
-      body: JSON.stringify({
-        text: newComment,
-        task_id: taskId,
-      }),
-    });
+    const response = await fetch(
+      `${config.serverUrl}/tasks/${taskId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.token}`,
+        },
+        body: JSON.stringify({
+          text: newComment,
+          task_id: taskId,
+        }),
+      }
+    );
 
     if (response.ok) {
       const newPostedComment = await response.json();
@@ -189,7 +221,7 @@ export default function TaskDetails() {
       ];
       setComments(updatedComments);
       updateTaskComments(taskId, updatedComments.length);
-      hasFetchedComments.current = false; // Allow fetching after posting
+      hasFetchedComments.current = false;
       await fetchCommentsForTask(taskId);
       setNewComment("");
     } else {
@@ -202,23 +234,29 @@ export default function TaskDetails() {
 
     if (isNaN(taskId)) return;
 
-    const response = await fetch(`${config.serverUrl}/tasks/${taskId}/comments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.token}` },
-      body: JSON.stringify({
-        text: replyText,
-        task_id: taskId,
-        parent_id: parentId,
-      }),
-    });
+    const response = await fetch(
+      `${config.serverUrl}/tasks/${taskId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.token}`,
+        },
+        body: JSON.stringify({
+          text: replyText,
+          task_id: taskId,
+          parent_id: parentId,
+        }),
+      }
+    );
 
     if (response.ok) {
       const newPostedReply = await response.json();
       const newReplyId = newPostedReply.id || Date.now();
 
-      const parentIndex = comments.findIndex((comment) => comment.id === parentId);
+      const parentIndex = comments.findIndex(
+        (comment) => comment.id === parentId
+      );
       if (parentIndex === -1) return;
 
       const newSubcomment = {
@@ -234,7 +272,7 @@ export default function TaskDetails() {
       updatedComments.splice(parentIndex + 1, 0, newSubcomment);
       setComments(updatedComments);
       updateTaskComments(taskId, updatedComments.length);
-      hasFetchedComments.current = false; // Allow fetching after posting
+      hasFetchedComments.current = false;
       await fetchCommentsForTask(taskId);
       setReplyText("");
       setReplyingTo(null);
@@ -247,7 +285,10 @@ export default function TaskDetails() {
     if (e.key === "Enter") handlePostComment();
   };
 
-  const handleReplyKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, parentId: number) => {
+  const handleReplyKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    parentId: number
+  ) => {
     if (e.key === "Enter") handlePostReply(parentId);
   };
 
@@ -267,7 +308,12 @@ export default function TaskDetails() {
           {statusError && <div className={styles.error}>{statusError}</div>}
           <div className={styles.status}>
             <div className={styles.stats}>
-              <Image src="/icons/pie-chart.svg" width={24} height={24} alt="chart" />
+              <Image
+                src="/icons/pie-chart.svg"
+                width={24}
+                height={24}
+                alt="chart"
+              />
               <p>სტატუსი</p>
             </div>
             <div className={styles.block}>
@@ -279,7 +325,12 @@ export default function TaskDetails() {
           </div>
           <div className={styles.employee}>
             <div className={styles.stats}>
-              <Image src="/icons/stickman.svg" width={24} height={24} alt="chart"/>
+              <Image
+                src="/icons/stickman.svg"
+                width={24}
+                height={24}
+                alt="chart"
+              />
               <p>თანამშრომელი</p>
             </div>
             <div className={styles.employeeInfo}>
@@ -304,11 +355,18 @@ export default function TaskDetails() {
           </div>
           <div className={styles.deadline}>
             <div className={styles.stats}>
-              <Image src="/icons/calendar.svg" width={24} height={24} alt="chart" />
+              <Image
+                src="/icons/calendar.svg"
+                width={24}
+                height={24}
+                alt="chart"
+              />
               <p>დავალების ვადა</p>
             </div>
             <div className={styles.date}>
-              {task.due_date ? new Date(task.due_date).toLocaleDateString() : "No due date"}
+              {task.due_date
+                ? new Date(task.due_date).toLocaleDateString()
+                : "No due date"}
             </div>
           </div>
         </div>

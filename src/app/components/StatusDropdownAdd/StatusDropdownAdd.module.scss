@@ -1,49 +1,69 @@
 @import "../../Colors.module.scss";
 
-.container {
-  display: flex;
-  flex-direction: column;
-  width: 231px;
-  border: 1px solid rgba(222, 226, 230, 1);
-  border-radius: 5px;
+.dropdownWrapper {
   position: relative;
-  padding: 0 14px;
-  background-color: #fff;
-  display: flex;
+  width: 231px;
 }
 
-.containerActive {
-  border-color: $purple;
-}
-
-.beforeDrop {
+.dropdown {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
   height: 46px;
-}
-
-.left {
-  display: flex;
-  align-items: center;
-}
-
-.arrow {
+  padding: 0 14px;
+  border: 1px solid rgba(222, 226, 230, 1);
+  border-radius: 5px;
+  background-color: #fff;
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  position: relative;
+  z-index: 2;
+
+  &.active {
+    border-bottom: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: 1px solid $purple;
+    border-bottom: none;
+  }
+}
+
+.arrowLocked {
+  transition: transform 0.3s ease;
 }
 
 .arrowOpen {
   transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+.dropdownContent {
+  position: absolute;
+  top: 46px;
+  left: 0;
+  width: 99.3%;
+  background-color: #fff;
+  border: 1px solid rgba(222, 226, 230, 1);
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  z-index: 1;
+  border: 1px solid $purple;
 }
 
 .dropdownItem {
   display: flex;
   align-items: center;
-  width: 100%;
-  height: 46px;
   padding: 0 14px;
+  height: 46px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(222, 226, 230, 0.3);
+  }
+}
+
+.selected {
+  font-weight: 600;
+  color: $purple;
 }

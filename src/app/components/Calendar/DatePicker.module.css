@@ -1,0 +1,279 @@
+.datepicker {
+  max-width: 320px;
+}
+
+.container {
+  width: 100%;
+  max-width: 318px;
+}
+
+.label {
+  color: #343a40;
+  white-space: nowrap;
+  flex: 1;
+  align-self: stretch;
+  gap: 10px;
+  width: 88px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-family: FiraGO;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 100%;
+}
+
+.inputWrapper {
+  width: 100%;
+}
+
+.inputField {
+  width: 270px;
+  margin-top: 5px;
+  border: 1px solid #ced4da; /* default */
+  color: #adb5bd; /* default placeholder color */
+  white-space: nowrap;
+  letter-spacing: -0.18px;
+  background-color: #fff;
+  border-radius: 5px;
+  align-items: stretch;
+  gap: 5px;
+  padding: 12px 64px 12px 14px;
+  font-family: FiraGO, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  display: flex;
+  overflow: hidden;
+  height: 20px;
+}
+
+.inputFieldActive {
+  border: 1px solid var(--purple-accent-color, #8338ec);
+}
+
+.calendarIcon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+  width: 16px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.inputContent {
+  align-items: stretch;
+  display: flex;
+}
+
+.caret {
+  background-color: #212327;
+  flex-shrink: 0;
+  align-self: start;
+  width: 1px;
+  height: 20px;
+  display: flex;
+}
+
+.blinkingCaret {
+  animation: blinkCaret 1s step-start infinite;
+}
+
+@keyframes blinkCaret {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.placeholder {
+  -webkit-line-clamp: 1;
+  font-feature-settings: "dlig" on;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  display: flex;
+  align-items: center;
+}
+
+.placeholderSelected {
+  color: #0d0f10; /* 🔥 Black when selected */
+}
+
+.calendarDropdown {
+  background-color: #fff;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 4px;
+  padding: 16px;
+  display: flex;
+  box-shadow: 0 12px 24px #0003;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.monthDisplay {
+  color: #000;
+  text-align: center;
+  justify-content: start;
+  align-self: stretch;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-family: FiraGO, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+}
+
+.monthText {
+  align-self: stretch;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.monthIcon {
+  aspect-ratio: 2;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 8px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.navigationButtons {
+  justify-content: start;
+  align-self: stretch;
+  align-items: start;
+  gap: 8px;
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+}
+
+.prevButton,
+.nextButton {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+  width: 20px;
+  cursor: pointer;
+}
+
+.calendarGrid {
+  color: #0d0f10;
+  white-space: nowrap;
+  text-align: center;
+  align-self: center;
+  margin-top: 22px;
+  font-family: FiraGO, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.calendarRow {
+  justify-content: start;
+  align-items: start;
+  display: flex;
+}
+
+.dayHeader {
+  font-feature-settings: "liga" off, "clig" off;
+  border-radius: 2px;
+  align-self: stretch;
+  width: 32px;
+  min-height: 32px;
+}
+
+.inactiveRow {
+  color: #6c757d;
+  justify-content: start;
+  align-items: start;
+  display: flex;
+}
+
+.dayCell,
+.activeDay,
+.inactiveDay {
+  font-feature-settings: "liga" off, "clig" off;
+  color: #0d0f10;
+  border-radius: 2px;
+  align-self: stretch;
+  width: 32px;
+  min-height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inactiveDay {
+  color: #6c757d;
+}
+
+.selectedDay {
+  border: 2px solid var(--purple-accent-color, #8338ec);
+  color: #fff;
+  background-color: #8338ec;
+  border-radius: 2px;
+  align-self: stretch;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBar {
+  color: #8338ec;
+  white-space: nowrap;
+  text-align: center;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px 100px;
+  width: 100%;
+  margin-top: 22px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-family: FiraGO, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  display: flex;
+}
+
+.cancelButton,
+.okButton {
+  font-feature-settings: "liga" off, "clig" off;
+  align-self: stretch;
+  margin-top: auto;
+  margin-bottom: auto;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  font-family: FiraGO;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 100%;
+  letter-spacing: 0px;
+  text-align: center;
+  color: #8338ec;
+}

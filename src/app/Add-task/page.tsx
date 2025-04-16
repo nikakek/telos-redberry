@@ -3,11 +3,12 @@ import DepartmentsDropdownAdd from "../components/DepartmentsDropdownAdd/Departm
 import EmployeesDropdownAdd from "../components/EmployeeDropdownAdd/EmployeeDropdownAdd";
 import PriorityDropdown from "../components/PriorityDropdown/PriorityDropdown";
 import StatusDropdownAdd from "../components/StatusDropdownAdd/StatusDropdownAdd";
+import DatePicker from "../components/Calendar/DatePicker";
 import styles from "./page.module.scss";
 import { useFormik } from "formik";
-import Image from "next/image";
 import { useTasks } from "../components/contexts/TaskContext";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface FormValues {
   name: string;
@@ -24,7 +25,7 @@ const initialValues: FormValues = {
   description: "",
   status: "დასაწყები",
   priority: "",
-  department: "დიზაინის დეპარტამენტი",
+  department: "",
   employee: "",
   due_date: "",
 };
@@ -33,7 +34,7 @@ const validate = (values: FormValues) => {
   const errors: Partial<FormValues> = {};
 
   if (!values.name) {
-    errors.name = "მინიმუმ 2 სიმბოლო";
+    errors.name = "სავალდებულო";
   } else if (values.name.length < 2) {
     errors.name = "მინიმუმ 2 სიმბოლო";
   } else if (values.name.length > 255) {
@@ -63,6 +64,10 @@ const validate = (values: FormValues) => {
 
   if (!values.employee) {
     errors.employee = "აირჩიეთ თანამშრომელი";
+  }
+
+  if (!values.due_date) {
+    errors.due_date = "აირჩიეთ თარიღი";
   }
 
   return errors;
@@ -113,27 +118,39 @@ const ValidationMessages = ({
   );
 };
 
-const formatDateDisplay = (date: string): string => {
-  if (!date) return "DD/MM/YYYY";
-  const [year, month, day] = date.split("-");
-  return `${day}/${month}/${year}`.toUpperCase();
-};
-
 export default function AddTask() {
-  const { departments, employees, priorities, statuses, addTask } = useTasks();
+  const {
+    departments,
+    employees,
+    priorities,
+    statuses,
+    addTask,
+    error,
+    loading,
+  } = useTasks();
   const router = useRouter();
 
   const formik = useFormik<FormValues>({
     initialValues,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const selectedStatus = statuses.find((status) => status.name === values.status);
+        if (!departments || departments.length === 0) {
+          throw new Error("No departments available");
+        }
+
+        const selectedStatus = statuses.find(
+          (status) => status.name === values.status
+        );
         if (!selectedStatus) throw new Error("Invalid status selected");
 
-        const selectedPriority = priorities.find((priority) => priority.name === values.priority);
+        const selectedPriority = priorities.find(
+          (priority) => priority.name === values.priority
+        );
         if (!selectedPriority) throw new Error("Invalid priority selected");
 
-        const selectedDepartment = departments.find((dept) => dept.name === values.department);
+        const selectedDepartment = departments.find(
+          (dept) => dept.name === values.department
+        );
         if (!selectedDepartment) throw new Error("Invalid department selected");
 
         const selectedEmployee = employees.find(
@@ -141,10 +158,14 @@ export default function AddTask() {
         );
         if (!selectedEmployee) throw new Error("Invalid employee selected");
 
+        const transformedDueDate = values.due_date
+          ? new Date(values.due_date).toISOString()
+          : null;
+
         const payload = {
           name: values.name,
           description: values.description || null,
-          due_date: values.due_date || null,
+          due_date: transformedDueDate,
           status_id: selectedStatus.id,
           priority_id: selectedPriority.id,
           department_id: selectedDepartment.id,
@@ -153,10 +174,13 @@ export default function AddTask() {
 
         await addTask(payload);
         resetForm();
-        router.push("/"); 
+        router.push("/");
       } catch (error: any) {
         console.error("Error submitting form:", error.message);
-        formik.setFieldError("name", `Failed to submit the task: ${error.message}`);
+        formik.setFieldError(
+          "name",
+          `Failed to submit the task: ${error.message}`
+        );
       } finally {
         setSubmitting(false);
       }
@@ -166,14 +190,30 @@ export default function AddTask() {
     validateOnBlur: true,
   });
 
+  useEffect(() => {
+    if (formik.values.due_date) {
+      console.log("Calendar Date Changed in Form:", formik.values.due_date);
+    }
+  }, [formik.values.due_date]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className={styles.formError}>Error: {error}</div>;
+  }
+
   return (
     <section className={styles.section}>
       <h1 className={styles.title}>შექმენი ახალი დავალება</h1>
       <div className={styles.container}>
         <form onSubmit={formik.handleSubmit} className={styles.form}>
-          {formik.errors.name && formik.touched.name && typeof formik.errors.name === "string" && (
-            <div className={styles.formError}>{formik.errors.name}</div>
-          )}
+          {formik.errors.name &&
+            formik.touched.name &&
+            typeof formik.errors.name === "string" && (
+              <div className={styles.formError}>{formik.errors.name}</div>
+            )}
           <div className={styles.filters}>
             <div className={styles.leftFilter}>
               <div className={styles.titleFilter}>
@@ -251,9 +291,9 @@ export default function AddTask() {
                 <label>დეპარტამენტი*</label>
                 <DepartmentsDropdownAdd
                   initialDepartment={formik.values.department}
-                  onDepartmentChange={(newDepartment: string) =>
-                    formik.setFieldValue("department", newDepartment)
-                  }
+                  onDepartmentChange={(newDepartment: string) => {
+                    formik.setFieldValue("department", newDepartment);
+                  }}
                 />
                 {formik.errors.department && formik.touched.department && (
                   <div className={styles.errorMessage}>
@@ -275,28 +315,24 @@ export default function AddTask() {
                   </div>
                 )}
               </div>
-              <div className={styles.calendar}>
-                <label>დედლაინი</label>
-                <div className={styles.datePickerContainer}>
-                  <Image
-                    src="../icons/calendar.svg"
-                    width={16}
-                    height={16}
-                    alt="calendar icon"
-                    className={styles.calendarIcon}
-                  />
-                  <input
-                    type="date"
-                    name="due_date"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.due_date}
-                    className={styles.dateInput}
-                  />
-                  <span className={styles.dateDisplay}>
-                    {formatDateDisplay(formik.values.due_date)}
-                  </span>
-                </div>
+              <div className={styles.datePickerDiv}>
+                <DatePicker
+                  formik={formik}
+                  width={318}
+                  label="დასრულების თარიღი*"
+                  placeholder="აირჩიეთ თარიღი"
+                  onDateChange={(date: Date | null) => {
+                    formik.setFieldValue(
+                      "due_date",
+                      date ? date.toISOString() : ""
+                    );
+                  }}
+                />
+                {formik.errors.due_date && formik.touched.due_date && (
+                  <div className={styles.errorMessage}>
+                    {formik.errors.due_date}
+                  </div>
+                )}
               </div>
             </div>
           </div>

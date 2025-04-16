@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import styles from "./StatusDropdownAdd.module.scss"; // Adjust path if needed
+import styles from "./StatusDropdownAdd.module.scss";
 import Image from "next/image";
 import clsx from "clsx";
 import { useTasks } from "../contexts/TaskContext";
@@ -10,7 +10,10 @@ interface StatusDropdownAddProps {
   onStatusChange: (newStatus: string) => void;
 }
 
-function StatusDropdownAdd({ initialStatus, onStatusChange }: StatusDropdownAddProps) {
+function StatusDropdownAdd({
+  initialStatus,
+  onStatusChange,
+}: StatusDropdownAddProps) {
   const { statuses } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(initialStatus);
@@ -18,7 +21,10 @@ function StatusDropdownAdd({ initialStatus, onStatusChange }: StatusDropdownAddP
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };

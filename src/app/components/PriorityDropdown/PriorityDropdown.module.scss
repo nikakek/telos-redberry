@@ -24,7 +24,6 @@
   justify-content: space-between;
   position: relative;
   position: absolute;
-
 }
 
 .left {
@@ -58,13 +57,11 @@
   gap: 6px;
   display: flex;
 
-
   align-items: center;
   padding: 0 14px;
 
   span {
     margin-left: 8px;
-    
   }
 }
 
@@ -80,9 +77,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 14px;
-  
 }
 
 .containerActive {
-  border-color: $purple;
+  border: 1px solid $purple;
 }

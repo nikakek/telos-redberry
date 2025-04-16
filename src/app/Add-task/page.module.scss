@@ -51,7 +51,7 @@
   max-width: 800px;
   gap: 161px;
   width: 550px;
-  height: 491px;;
+  height: 491px;
 }
 
 .leftFilter {
@@ -219,14 +219,13 @@
 .employeeDropdownDiv {
   position: absolute;
   z-index: 100;
-  margin-top: 177px;
+  margin-top: 195px;
 }
 
 .calendar {
   margin-top: 425px;
   position: relative;
 }
-
 
 .calendar input {
   width: 290px;
@@ -240,11 +239,11 @@
   font-size: 14px;
   line-height: 20px;
   letter-spacing: -1.25%;
-  color: rgba(173, 181, 189, 1);  
+  color: rgba(173, 181, 189, 1);
   border: 1px solid rgba(222, 226, 230, 1);
 }
 
-.calendarIcon{
+.calendarIcon {
   margin-left: 14px;
   position: absolute;
   margin-top: 16px;
@@ -268,13 +267,12 @@
   color: transparent;
 }
 
-
 .dateInput:focus {
   color: initial;
 }
 
 .calendar input[type="date"] {
-  color: transparent; 
+  color: transparent;
 }
 
 .dateDisplay {
@@ -285,7 +283,7 @@
 
 .submitButton {
   background-color: rgba(131, 56, 236, 1);
-    width: 208px;
+  width: 208px;
   height: 42px;
   border-radius: 5px;
   color: rgba(255, 255, 255, 1);
@@ -305,10 +303,22 @@
   justify-content: end;
 }
 
-.aboutFilter textarea{
+.aboutFilter textarea {
   height: 105px;
 }
 
 .form {
   width: 100%;
+}
+
+.datePickerDiv {
+  margin-top: 412px;
+  z-index: 10;
+}
+
+.datePicker {
+  width: 318px;
+  height: 45px;
+  border: 1px solid rgba(222, 226, 230, 1);
+  border-radius: 5px;
 }

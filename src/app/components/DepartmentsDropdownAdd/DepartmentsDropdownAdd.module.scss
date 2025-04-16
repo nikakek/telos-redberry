@@ -72,3 +72,21 @@
   text-overflow: ellipsis;
   line-height: 1.2;
 }
+
+.beforeDropOpen {
+  border: 1px solid $purple;
+  border-bottom: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dropdownContent {
+  border: 1px solid $purple;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #fff;
+  box-sizing: border-box;
+}

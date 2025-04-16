@@ -1,5 +1,12 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import config from "../../Config/Config";
 
 interface Department {
@@ -43,10 +50,11 @@ interface ApiTask {
   employee: Employee;
   status: Status;
   priority: Priority;
+  total_comments: number;
 }
 
 interface Task extends ApiTask {
-  comment_count: number; // Added for client-side state
+  comment_count: number;
   commentDetails?: Comment[];
 }
 
@@ -58,7 +66,11 @@ interface TaskContextType {
   priorities: Priority[];
   statuses: Status[];
   addTask: (taskData: Partial<Task>) => Promise<void>;
-  updateTaskStatus: (taskId: number, newStatusId: number, newStatusName: string) => Promise<void>;
+  updateTaskStatus: (
+    taskId: number,
+    newStatusId: number,
+    newStatusName: string
+  ) => Promise<void>;
   updateTaskComments: (taskId: number, newCommentCount: number) => void;
   refreshTasks: () => void;
   refreshEmployees: () => Promise<void>;
@@ -79,14 +91,24 @@ const statusNameMap: { [key: string]: string } = {
   "To Do": "დასაწყები",
   "In Progress": "პროგრესში",
   "Ready for Testing": "მზად ტესტირებისთვის",
-  "Done": "დასრულებული",
+  Done: "დასრულებული",
 };
 
 const statusNameToApiMap: { [key: string]: string } = {
-  "დასაწყები": "To Do",
-  "პროგრესში": "In Progress",
+  დასაწყები: "To Do",
+  პროგრესში: "In Progress",
   "მზად ტესტირებისთვის": "Ready for Testing",
-  "დასრულებული": "Done",
+  დასრულებული: "Done",
+};
+
+const departmentNameMap: { [key: string]: string } = {
+  "Design Department": "დიზაინის დეპარტამენტი",
+  // Add other mappings as needed based on API response
+};
+
+const departmentNameToApiMap: { [key: string]: string } = {
+  "დიზაინის დეპარტამენტი": "Design Department",
+  // Add other mappings as needed based on API response
 };
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
@@ -98,16 +120,21 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const fetchingComments = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     globalFetchState.instanceCount += 1;
-    console.log(`TaskProvider instantiated. Total instances: ${globalFetchState.instanceCount}`);
+    console.log(
+      `TaskProvider instantiated. Total instances: ${globalFetchState.instanceCount}`
+    );
     fetchStaticData();
     fetchTasks();
 
     return () => {
       globalFetchState.instanceCount -= 1;
-      console.log(`TaskProvider unmounted. Total instances: ${globalFetchState.instanceCount}`);
+      console.log(
+        `TaskProvider unmounted. Total instances: ${globalFetchState.instanceCount}`
+      );
     };
   }, []);
 
@@ -121,47 +148,100 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
 
-      const [departmentsRes, employeesRes, prioritiesRes, statusesRes] = await Promise.all([
-        fetch(`${config.serverUrl}/departments`, {
-          headers: { Authorization: `Bearer ${config.token}` },
-        }).then((res) => {
-          if (!res.ok) throw new Error(`Failed to fetch departments: ${res.status}`);
-          return res.json();
-        }),
-        fetch(`${config.serverUrl}/employees`, {
-          headers: { Authorization: `Bearer ${config.token}` },
-        }).then((res) => {
-          if (!res.ok) throw new Error(`Failed to fetch employees: ${res.status}`);
-          return res.json();
-        }),
-        fetch(`${config.serverUrl}/priorities`, {
-          headers: { Authorization: `Bearer ${config.token}` },
-        }).then((res) => {
-          if (!res.ok) throw new Error(`Failed to fetch priorities: ${res.status}`);
-          return res.json();
-        }),
-        fetch(`${config.serverUrl}/statuses`, {
-          headers: { Authorization: `Bearer ${config.token}` },
-        }).then((res) => {
-          if (!res.ok) throw new Error(`Failed to fetch statuses: ${res.status}`);
-          return res.json();
-        }),
-      ]);
+      const [departmentsRes, employeesRes, prioritiesRes, statusesRes] =
+        await Promise.all([
+          fetch(`${config.serverUrl}/departments`, {
+            headers: { Authorization: `Bearer ${config.token}` },
+          }).then(async (res) => {
+            console.log(
+              "Fetching departments from:",
+              `${config.serverUrl}/departments`
+            );
+            console.log("Departments response status:", res.status);
+            const departmentsData = await res.json();
+            console.log("Raw departments data:", departmentsData);
+            if (!res.ok) {
+              const errorData = await res.text();
+              throw new Error(
+                `Failed to fetch departments: ${res.status} - ${errorData}`
+              );
+            }
+            return departmentsData;
+          }),
+          fetch(`${config.serverUrl}/employees`, {
+            headers: { Authorization: `Bearer ${config.token}` },
+          }).then(async (res) => {
+            console.log(
+              "Fetching employees from:",
+              `${config.serverUrl}/employees`
+            );
+            console.log("Employees response status:", res.status);
+            if (!res.ok) {
+              const errorData = await res.text();
+              throw new Error(
+                `Failed to fetch employees: ${res.status} - ${errorData}`
+              );
+            }
+            return res.json();
+          }),
+          fetch(`${config.serverUrl}/priorities`, {
+            headers: { Authorization: `Bearer ${config.token}` },
+          }).then(async (res) => {
+            console.log(
+              "Fetching priorities from:",
+              `${config.serverUrl}/priorities`
+            );
+            console.log("Priorities response status:", res.status);
+            if (!res.ok) {
+              const errorData = await res.text();
+              throw new Error(
+                `Failed to fetch priorities: ${res.status} - ${errorData}`
+              );
+            }
+            return res.json();
+          }),
+          fetch(`${config.serverUrl}/statuses`, {
+            headers: { Authorization: `Bearer ${config.token}` },
+          }).then(async (res) => {
+            console.log(
+              "Fetching statuses from:",
+              `${config.serverUrl}/statuses`
+            );
+            console.log("Statuses response status:", res.status);
+            if (!res.ok) {
+              const errorData = await res.text();
+              throw new Error(
+                `Failed to fetch statuses: ${res.status} - ${errorData}`
+              );
+            }
+            return res.json();
+          }),
+        ]);
 
-      // Map status names to Georgian
+      const mappedDepartments = departmentsRes.map((dept: Department) => ({
+        ...dept,
+        name: departmentNameMap[dept.name] || dept.name,
+      }));
+
       const mappedStatuses = statusesRes.map((status: Status) => ({
         ...status,
         name: statusNameMap[status.name] || status.name,
       }));
 
-      setDepartments(departmentsRes);
+      setDepartments(mappedDepartments);
       setEmployees(employeesRes);
       setPriorities(prioritiesRes);
       setStatuses(mappedStatuses);
       globalFetchState.hasFetchedStatic = true;
     } catch (err: any) {
       console.error("Error fetching static data:", err.message, err);
-      setError("Failed to load static data. Please try again later.");
+      setError(
+        "Failed to load static data. Please check your network or server."
+      );
+      setDepartments([]);
+      setEmployees([]);
+      setPriorities([]);
+      setStatuses([]);
     } finally {
       setLoading(false);
     }
@@ -182,117 +262,185 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const tasksRes = await fetch(`${config.serverUrl}/tasks`, {
         headers: { Authorization: `Bearer ${config.token}` },
       });
-      if (!tasksRes.ok) throw new Error(`Failed to fetch tasks: ${tasksRes.status}`);
+
+      console.log("Fetching tasks from:", `${config.serverUrl}/tasks`);
+      console.log("Tasks response status:", tasksRes.status);
+      console.log(
+        "Tasks response headers:",
+        Object.fromEntries(tasksRes.headers.entries())
+      );
+
+      if (!tasksRes.ok) {
+        let errorData;
+        try {
+          errorData = await tasksRes.json();
+        } catch (jsonError) {
+          errorData = await tasksRes.text();
+        }
+        throw new Error(
+          `Failed to fetch tasks: ${tasksRes.status} - ${
+            typeof errorData === "string"
+              ? errorData
+              : JSON.stringify(errorData)
+          }`
+        );
+      }
+
       const tasksData = await tasksRes.json();
       console.log("Raw tasks API response:", tasksData);
 
-      // Map status names to Georgian
+      if (!Array.isArray(tasksData)) {
+        console.error(
+          `Expected tasksData to be an array, got: ${typeof tasksData}`,
+          tasksData
+        );
+        setTasks([]);
+        globalFetchState.hasFetchedTasks = true;
+        return;
+      }
+
       const tasksWithMappedStatus = tasksData.map((task: ApiTask) => ({
         ...task,
         status: {
           ...task.status,
           name: statusNameMap[task.status.name] || task.status.name,
         },
-        comment_count: 0, // Initialize with 0, will be updated
+        comment_count: task.total_comments,
       }));
 
-      // Fetch comments for all tasks
-      const tasksWithComments = await Promise.all(
-        tasksWithMappedStatus.map(async (task: Task) => {
-          try {
-            const commentsRes = await fetch(`${config.serverUrl}/tasks/${task.id}/comments`, {
-              headers: { Authorization: `Bearer ${config.token}` },
-            });
-            if (!commentsRes.ok) {
-              console.warn(`Failed to fetch comments for task ${task.id}: ${commentsRes.status}`);
-              return { ...task, comment_count: 0 };
-            }
-            const commentsData = await commentsRes.json();
-
-            // Calculate total comment count including subcomments
-            const totalComments = commentsData.reduce((count: number, comment: Comment) => {
-              const subCommentCount = comment.sub_comments ? comment.sub_comments.length : 0;
-              return count + 1 + subCommentCount;
-            }, 0);
-
-            return { ...task, comment_count: totalComments };
-          } catch (error) {
-            console.error(`Error fetching comments for task ${task.id}:`, error);
-            return { ...task, comment_count: 0 };
-          }
-        })
-      );
-
-      console.log("Tasks with comment counts:", tasksWithComments);
-      setTasks(tasksWithComments);
+      console.log("Tasks with comment counts:", tasksWithMappedStatus);
+      setTasks(tasksWithMappedStatus);
       globalFetchState.hasFetchedTasks = true;
     } catch (err: any) {
       console.error("Error fetching tasks:", err.message, err);
-      setError("Failed to load tasks. Please try again later.");
+      setError("Failed to load tasks. Please check your network or server.");
+      setTasks([]);
     } finally {
       setLoading(false);
     }
   };
 
   const fetchCommentsForTask = useCallback(async (taskId: number) => {
+    console.log(
+      `fetchCommentsForTask called for taskId: ${taskId} at ${new Date().toISOString()}`
+    );
+
+    if (fetchingComments.current.has(taskId)) {
+      console.log(
+        `Already fetching comments for taskId: ${taskId}, skipping...`
+      );
+      return;
+    }
+
+    fetchingComments.current.add(taskId);
     try {
-      const commentsRes = await fetch(`${config.serverUrl}/tasks/${taskId}/comments`, {
-        headers: { Authorization: `Bearer ${config.token}` },
-      });
+      const commentsRes = await fetch(
+        `${config.serverUrl}/tasks/${taskId}/comments`,
+        {
+          headers: { Authorization: `Bearer ${config.token}` },
+        }
+      );
+
+      console.log(
+        "Fetching comments from:",
+        `${config.serverUrl}/tasks/${taskId}/comments`
+      );
+      console.log("Comments response status:", commentsRes.status);
+
       if (!commentsRes.ok) {
-        console.error(`Failed to fetch comments for task ${taskId}: ${commentsRes.status}`);
+        const errorData = await commentsRes.text();
+        console.error(
+          `Failed to fetch comments for task ${taskId}: ${commentsRes.status} - ${errorData}`
+        );
         return;
       }
-      const commentsData = await commentsRes.json();
 
+      const commentsData = await commentsRes.json();
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === taskId
-            ? { ...task, commentDetails: commentsData }
-            : task
+          task.id === taskId ? { ...task, commentDetails: commentsData } : task
         )
       );
     } catch (err: any) {
       console.error("Error fetching comments for task:", err.message, err);
-      setError("Failed to fetch comments for task.");
+      setError(
+        "Failed to fetch comments for task. Please check your network or server."
+      );
+    } finally {
+      fetchingComments.current.delete(taskId);
     }
   }, []);
 
   const addTask = async (taskData: Partial<Task>) => {
     try {
-      const response = await fetch(`${config.serverUrl}/tasks`, {
+      const url = `${config.serverUrl}/tasks`;
+      console.log("Adding task to URL:", url);
+      console.log("Authorization token:", config.token);
+      console.log("Request body:", taskData);
+      console.log("Request headers:", {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.token}`,
+      });
+
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${config.token}` },
+          Authorization: `Bearer ${config.token}`,
+        },
         body: JSON.stringify(taskData),
       });
 
+      console.log("Add task response status:", response.status);
+      console.log(
+        "Add task response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Failed to add task: ${response.status} - ${errorData.message || response.statusText}`);
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (jsonError) {
+          errorData = await response.text();
+        }
+        throw new Error(
+          `Failed to add task: ${response.status} - ${
+            typeof errorData === "string"
+              ? errorData
+              : JSON.stringify(errorData)
+          }`
+        );
       }
 
-      globalFetchState.hasFetchedTasks = false; // Reset tasks cache on new task
+      globalFetchState.hasFetchedTasks = false;
       await fetchTasks();
     } catch (err: any) {
       console.error("Error adding task:", err.message, err);
-      throw err;
+      throw new Error(`Failed to add task: ${err.message}`);
     }
   };
 
-  const updateTaskStatus = async (taskId: number, newStatusId: number, newStatusName: string) => {
+  const updateTaskStatus = async (
+    taskId: number,
+    newStatusId: number,
+    newStatusName: string
+  ) => {
     try {
       const apiStatusName = statusNameToApiMap[newStatusName] || newStatusName;
       const response = await fetch(`${config.serverUrl}/tasks/${taskId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${config.token}` },
+          Authorization: `Bearer ${config.token}`,
+        },
         body: JSON.stringify({ status_id: newStatusId }),
       });
 
-      console.log(`PUT /tasks/${taskId} - Status: ${response.status}, Headers:`, response.headers.get("Content-Type"));
+      console.log(
+        `PUT /tasks/${taskId} - Status: ${response.status}, Headers:`,
+        Object.fromEntries(response.headers.entries())
+      );
 
       if (!response.ok) {
         let errorData;
@@ -303,7 +451,13 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
           errorData = await response.text();
         }
         console.error("Error updating task status:", errorData);
-        throw new Error(`Failed to update task status on server: ${response.status} - ${typeof errorData === "string" ? errorData : JSON.stringify(errorData)}`);
+        throw new Error(
+          `Failed to update task status on server: ${response.status} - ${
+            typeof errorData === "string"
+              ? errorData
+              : JSON.stringify(errorData)
+          }`
+        );
       }
 
       const contentType = response.headers.get("Content-Type");
@@ -317,12 +471,21 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       console.log(`Updating task ${taskId} to status: ${newStatusName}`);
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === taskId ? { ...task, status: { ...task.status, id: newStatusId, name: newStatusName } } : task
+          task.id === taskId
+            ? {
+                ...task,
+                status: {
+                  ...task.status,
+                  id: newStatusId,
+                  name: newStatusName,
+                },
+              }
+            : task
         )
       );
     } catch (err: any) {
       console.error("Error updating task status:", err.message, err);
-      throw err;
+      throw new Error(`Failed to update task status: ${err.message}`);
     }
   };
 
@@ -340,7 +503,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(debounceTimeout.current);
     }
     debounceTimeout.current = setTimeout(() => {
-      globalFetchState.hasFetchedTasks = false; // Reset tasks cache
+      globalFetchState.hasFetchedTasks = false;
       fetchTasks();
     }, 300);
   };
@@ -350,12 +513,24 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch(`${config.serverUrl}/employees`, {
         headers: { Authorization: `Bearer ${config.token}` },
       });
-      if (!res.ok) throw new Error(`Failed to fetch employees: ${res.status}`);
+
+      console.log("Fetching employees from:", `${config.serverUrl}/employees`);
+      console.log("Refresh employees response status:", res.status);
+
+      if (!res.ok) {
+        const errorData = await res.text();
+        throw new Error(
+          `Failed to fetch employees: ${res.status} - ${errorData}`
+        );
+      }
+
       const employeesData = await res.json();
       setEmployees(employeesData);
-    } catch (error) {
-      console.error("Error refreshing employees:", error);
-      setError("Failed to refresh employees.");
+    } catch (error: any) {
+      console.error("Error refreshing employees:", error.message, error);
+      setError(
+        "Failed to refresh employees. Please check your network or server."
+      );
     }
   }, []);
 
