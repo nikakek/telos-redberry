@@ -1,29 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import CheckboxDiv from "../Checkboxdiv/CheckboxDiv";
 import CustomButton from "../CustomButton/CustomButton";
 import styles from "../DepartmentsDropdown/DepartmentsDropdown.module.scss";
+import { useTasks } from "../contexts/TaskContext";
 
-function PrioritiesDropdown({ onSelect }) {
-  const [content, setContent] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedPriorities, setSelectedPriorities] = useState([]);
+interface PrioritiesDropdownProps {
+  onSelect: (priorities: string[]) => void;
+}
 
-  useEffect(() => {
-    axios
-      .get("https://momentum.redberryinternship.ge/api/priorities")
-      .then((result) => {
-        setContent(result.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching priorities:", error);
-        setLoading(false);
-      });
-  }, []);
+function PrioritiesDropdown({ onSelect }: PrioritiesDropdownProps) {
+  const { priorities, loading: contextLoading } = useTasks();
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
 
-  const handleCheckboxChange = (priorityName) => {
+  const handleCheckboxChange = (priorityName: string) => {
     setSelectedPriorities((prev) =>
       prev.includes(priorityName)
         ? prev.filter((name) => name !== priorityName)
@@ -32,7 +22,7 @@ function PrioritiesDropdown({ onSelect }) {
   };
 
   const handleSelect = () => {
-    console.log("Selected priorities:", selectedPriorities); // Debug
+    console.log("Selected priorities:", selectedPriorities);
     onSelect(selectedPriorities);
   };
 
@@ -40,10 +30,10 @@ function PrioritiesDropdown({ onSelect }) {
     <div className={styles.section}>
       <div className={styles.crop}>
         <div className={styles.content}>
-          {loading ? (
+          {contextLoading ? (
             <p>Loading...</p>
           ) : (
-            content.map((item, index) => (
+            priorities.map((item, index) => (
               <CheckboxDiv
                 key={index}
                 text={item.name}

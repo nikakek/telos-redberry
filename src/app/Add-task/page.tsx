@@ -6,36 +6,24 @@ import StatusDropdownAdd from "../components/StatusDropdownAdd/StatusDropdownAdd
 import styles from "./page.module.scss";
 import { useFormik } from "formik";
 import Image from "next/image";
-import config from "../Config/Config";
-
-interface Priority {
-  id: number;
-  name: string;
-  icon?: string;
-}
-
-interface Department {
-  id: number;
-  name: string;
-}
-
-// Removed unused Employee interface
+import { useTasks } from "../components/contexts/TaskContext";
+import { useRouter } from "next/navigation";
 
 interface FormValues {
-  name: string; // Maps to "title" in the form
+  name: string;
   description: string;
-  status: string; // Will be transformed to Status object
-  priority: string; // Will be transformed to Priority object
-  department: string; // Will be transformed to Department object
-  employee: string; // Will be transformed to Employee object
-  due_date: string; // Maps to "dueDate" in the form
+  status: string;
+  priority: string;
+  department: string;
+  employee: string;
+  due_date: string;
 }
 
 const initialValues: FormValues = {
   name: "",
   description: "",
   status: "დასაწყები",
-  priority: "", // Assuming PriorityDropdown sets this
+  priority: "",
   department: "დიზაინის დეპარტამენტი",
   employee: "",
   due_date: "",
@@ -131,57 +119,44 @@ const formatDateDisplay = (date: string): string => {
   return `${day}/${month}/${year}`.toUpperCase();
 };
 
-function AddTask() {
+export default function AddTask() {
+  const { departments, employees, priorities, statuses, addTask } = useTasks();
+  const router = useRouter();
+
   const formik = useFormik<FormValues>({
     initialValues,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
+        const selectedStatus = statuses.find((status) => status.name === values.status);
+        if (!selectedStatus) throw new Error("Invalid status selected");
+
+        const selectedPriority = priorities.find((priority) => priority.name === values.priority);
+        if (!selectedPriority) throw new Error("Invalid priority selected");
+
+        const selectedDepartment = departments.find((dept) => dept.name === values.department);
+        if (!selectedDepartment) throw new Error("Invalid department selected");
+
+        const selectedEmployee = employees.find(
+          (emp) => `${emp.name} ${emp.surname}` === values.employee
+        );
+        if (!selectedEmployee) throw new Error("Invalid employee selected");
+
         const payload = {
           name: values.name,
-          description: values.description,
+          description: values.description || null,
           due_date: values.due_date || null,
-          status: {
-            id: 1,
-            name: values.status,
-          },
-          priority: {
-            id: 1, 
-            name: values.priority || "High",
-          },
-          department: {
-            id: 1,
-            name: values.department,
-          },
-          employee: {
-            id: 1,
-            name: values.employee.split(" ")[0] || values.employee,
-            surname: values.employee.split(" ")[1] || "",
-            department_id: 1,
-          },
+          status_id: selectedStatus.id,
+          priority_id: selectedPriority.id,
+          department_id: selectedDepartment.id,
+          employee_id: selectedEmployee.id,
         };
 
-        const response = await fetch(`${config.serverUrl}/tasks`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${config.token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP error! Status: ${response.status} - ${response.statusText}`
-          );
-        }
-
-        const result = await response.json();
-        console.log("Task submitted successfully:", result);
-
+        await addTask(payload);
         resetForm();
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        alert(`Failed to submit the task: ${error.message}`);
+        router.push("/"); 
+      } catch (error: any) {
+        console.error("Error submitting form:", error.message);
+        formik.setFieldError("name", `Failed to submit the task: ${error.message}`);
       } finally {
         setSubmitting(false);
       }
@@ -196,6 +171,9 @@ function AddTask() {
       <h1 className={styles.title}>შექმენი ახალი დავალება</h1>
       <div className={styles.container}>
         <form onSubmit={formik.handleSubmit} className={styles.form}>
+          {formik.errors.name && formik.touched.name && typeof formik.errors.name === "string" && (
+            <div className={styles.formError}>{formik.errors.name}</div>
+          )}
           <div className={styles.filters}>
             <div className={styles.leftFilter}>
               <div className={styles.titleFilter}>
@@ -338,5 +316,3 @@ function AddTask() {
     </section>
   );
 }
-
-export default AddTask;

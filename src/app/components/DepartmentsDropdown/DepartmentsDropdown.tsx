@@ -1,23 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import CheckboxDiv from "../Checkboxdiv/CheckboxDiv";
 import CustomButton from "../CustomButton/CustomButton";
 import styles from "./DepartmentsDropdown.module.scss";
+import { useTasks } from "../contexts/TaskContext";
 
-function DepartmentsDropdown({ onSelect }) {
-  const [content, setContent] = useState([]);
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
+interface DepartmentsDropdownProps {
+  onSelect: (departments: string[]) => void;
+}
 
-  useEffect(() => {
-    axios("https://momentum.redberryinternship.ge/api/departments")
-      .then((result) => {
-        setContent(result.data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+function DepartmentsDropdown({ onSelect }: DepartmentsDropdownProps) {
+  const { departments, loading: contextLoading } = useTasks();
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
 
-  const handleCheckboxChange = (departmentName) => {
+  const handleCheckboxChange = (departmentName: string) => {
     setSelectedDepartments((prev) =>
       prev.includes(departmentName)
         ? prev.filter((name) => name !== departmentName)
@@ -33,14 +29,18 @@ function DepartmentsDropdown({ onSelect }) {
   return (
     <div className={styles.section}>
       <div className={styles.content}>
-        {content.map((item, index) => (
-          <CheckboxDiv
-            key={index}
-            text={item.name}
-            checked={selectedDepartments.includes(item.name)}
-            onChange={() => handleCheckboxChange(item.name)}
-          />
-        ))}
+        {contextLoading ? (
+          <p>Loading...</p>
+        ) : (
+          departments.map((item, index) => (
+            <CheckboxDiv
+              key={index}
+              text={item.name}
+              checked={selectedDepartments.includes(item.name)}
+              onChange={() => handleCheckboxChange(item.name)}
+            />
+          ))
+        )}
       </div>
       <div className={styles.button}>
         <CustomButton

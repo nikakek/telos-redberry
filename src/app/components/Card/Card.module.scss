@@ -6,6 +6,7 @@
   border-radius: 15px;
   padding: 20px;
   cursor: pointer;
+  position: relative;
 }
 
 .content {
@@ -87,4 +88,10 @@
 
 .avatar {
   border-radius: 50%;
+}
+
+.date {
+  position: absolute;
+  top: 26px;
+  right: 20px;
 }

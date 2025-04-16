@@ -1,34 +1,28 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import styles from "../DepartmentsDropdown/DepartmentsDropdown.module.scss";
+import { useState, useEffect, useRef } from "react";
 import CheckboxDiv from "../Checkboxdiv/CheckboxDiv";
 import CustomButton from "../CustomButton/CustomButton";
-import config from "../../Config/Config";
+import styles from "../DepartmentsDropdown/DepartmentsDropdown.module.scss";
+import { useTasks } from "../contexts/TaskContext";
 
-function EmployeesDropdown({ onSelect }) {
-  const [content, setContent] = useState([]);
-  const [loading, setLoading] = useState(true);
+interface EmployeesDropdownProps {
+  onSelect: (employees: string[]) => void;
+  refreshTrigger: number;
+}
+
+function EmployeesDropdown({ onSelect, refreshTrigger }: EmployeesDropdownProps) {
+  const { employees, loading: contextLoading, refreshEmployees } = useTasks();
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const lastRefreshTrigger = useRef<number>(refreshTrigger);
 
   useEffect(() => {
-    axios
-      .get(`${config.serverUrl}/employees`, {
-        headers: {
-          Authorization: `Bearer ${config.token}`,
-        },
-      })
-      .then((result) => {
-        setContent(result.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching employees:", error);
-        setLoading(false);
-      });
-  }, []);
+    if (lastRefreshTrigger.current !== refreshTrigger) {
+      refreshEmployees(); // Only refresh if refreshTrigger has changed
+      lastRefreshTrigger.current = refreshTrigger;
+    }
+  }, [refreshTrigger, refreshEmployees]); // refreshEmployees is now stable
 
-  const handleCheckboxChange = (employeeName) => {
+  const handleCheckboxChange = (employeeName: string) => {
     setSelectedEmployees((prev) =>
       prev.includes(employeeName)
         ? prev.filter((name) => name !== employeeName)
@@ -45,10 +39,10 @@ function EmployeesDropdown({ onSelect }) {
     <div className={styles.section}>
       <div className={styles.crop}>
         <div className={styles.content}>
-          {loading ? (
+          {contextLoading ? (
             <p>Loading...</p>
           ) : (
-            content.map((item, index) => (
+            employees.map((item, index) => (
               <CheckboxDiv
                 key={index}
                 img={item.avatar}

@@ -1,86 +1,39 @@
-import styles from "./CardSection.module.scss";
-import clsx from "clsx";
+"use client";
 import Card from "../Card/Card";
+import styles from "./CardSection.module.scss";
+import { Task } from "../contexts/TaskContext";
 
-type Department = {
-  id: number;
-  name: string;
-};
-
-type Employee = {
-  id: number;
-  name: string;
-  surname: string;
-  avatar: string;
-};
-
-type Status = {
-  id: number;
-  name: string;
-};
-
-type Priority = {
-  id: number;
-  name: string;
-  icon: string;
-};
-
-type TaskData = {
-  id: number;
-  name: string;
-  description: string;
-  due_date: string;
-  department: Department;
-  employee: Employee;
-  status: Status;
-  priority: Priority;
-};
-
-type Props = {
-  type: "starter" | "inProgress" | "readyForTest" | "done";
-  tasks?: TaskData[];
-};
-
-function CardSection({ type, tasks = [] }: Props) {
-  let color: string;
-  let text: string;
-
-  switch (type) {
-    case "starter":
-      color = "yellow";
-      text = "დასაწყები";
-      break;
-    case "inProgress":
-      color = "orange";
-      text = "პროგრესში";
-      break;
-    case "readyForTest":
-      color = "pink";
-      text = "მზად ტესტირებისთვის";
-      break;
-    case "done":
-      color = "blue";
-      text = "დასრულებული";
-      break;
-    default:
-      color = "grey";
-      text = "";
-  }
-
-  return (
-    <section className={styles.section}>
-      <div className={styles.sectionDiv}>
-        <div className={clsx(styles.title, styles[color])}>{text}</div>
-        {tasks.length === 0 ? (
-          <p className={styles.noTasks}>დავალება არ მოიძებნა</p>
-        ) : (
-          tasks.map((task) => (
-            <Card key={task.id} color={color} taskData={task} />
-          ))
-        )}
-      </div>
-    </section>
-  );
+interface CardSectionProps {
+  type: string;
+  status: string;
+  tasks: Task[];
 }
 
-export default CardSection;
+const typeToColorClass: { [key: string]: string } = {
+  starter: "yellow",
+  inProgress: "orange",
+  readyForTest: "pink",
+  done: "blue",
+};
+
+export default function CardSection({ type, status, tasks }: CardSectionProps) {
+  const filteredTasks = tasks.filter((task) => task.status.name === status);
+  const colorClass = typeToColorClass[type] || "yellow";
+
+  return (
+    <div className={`${styles.section} ${filteredTasks.length === 0 ? styles.noTasks : ""}`}>
+      <div className={styles.sectionDiv}>
+        <div className={`${styles.title} ${styles[colorClass]}`}>
+          <h2>{status}</h2>
+        </div>
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((task) => (
+            <Card key={task.id} task={task} />
+          ))
+        ) : (
+          <p></p>
+        )}
+      </div>
+    </div>
+  );
+}

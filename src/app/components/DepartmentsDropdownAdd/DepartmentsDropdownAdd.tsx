@@ -1,131 +1,80 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./DepartmentsDropdownAdd.module.scss";
 import Image from "next/image";
-import config from "../../Config/Config";
+import clsx from "clsx";
+import { useTasks } from "../contexts/TaskContext";
 
-interface Department {
-  id: number;
-  name: string;
-}
-
-interface DepartmentDropdownProps {
+interface DepartmentsDropdownAddProps {
   initialDepartment: string;
   onDepartmentChange: (newDepartment: string) => void;
 }
 
-export default function DepartmentsDropdownAdd({
-  initialDepartment,
-  onDepartmentChange,
-}: DepartmentDropdownProps) {
+function DepartmentsDropdownAdd({ initialDepartment, onDepartmentChange }: DepartmentsDropdownAddProps) {
+  const { departments } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] =
-    useState(initialDepartment);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(initialDepartment);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`${config.serverUrl}/departments`, {
-          headers: {
-            Authorization: `Bearer ${config.token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch departments: ${response.status} ${response.statusText}`
-          );
-        }
-        const data: Department[] = await response.json();
-        setDepartments(data);
-        const matchedDepartment = data.find(
-          (d) => d.name === initialDepartment
-        );
-        if (matchedDepartment) {
-          setSelectedDepartment(matchedDepartment.name);
-        } else {
-          setSelectedDepartment(initialDepartment);
-        }
-      } catch (err: any) {
-        console.error("Error fetching departments:", err.message);
-        setError("Failed to load departments");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDepartments();
-  }, [initialDepartment]);
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleArrowClick = () => {
-    setIsOpen(!isOpen);
-  };
+  useEffect(() => {
+    // Only update if initialDepartment has changed
+    if (selectedDepartment !== initialDepartment) {
+      setSelectedDepartment(initialDepartment);
+    }
+  }, [initialDepartment, selectedDepartment]);
 
-  const handleOptionClick = (name: string) => {
-    setSelectedDepartment(name);
-    onDepartmentChange(name);
+  const handleSelect = (departmentName: string) => {
+    setSelectedDepartment(departmentName);
+    onDepartmentChange(departmentName);
     setIsOpen(false);
   };
 
   return (
-    <div
-      className={`${styles.container} ${isOpen ? styles.containerActive : ""}`}
-      ref={dropdownRef}
-    >
-      <div className={styles.beforeDrop}>
+    <div className={styles.container} ref={dropdownRef}>
+      <div
+        className={clsx(styles.beforeDrop, { [styles.containerActive]: isOpen })}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <div className={styles.left}>
-          <span>{selectedDepartment || "აირჩიე დეპარტამენტი"}</span>
+          <span>{selectedDepartment || "აირჩიეთ დეპარტამენტი"}</span>
         </div>
-        <div className={styles.arrow} onClick={handleArrowClick}>
+        <div className={styles.arrow}>
           <Image
             src="../icons/arrowDown.svg"
             width={14}
             height={14}
-            alt="arrow down"
-            className={isOpen ? styles.arrowOpen : ""}
+            alt="Dropdown Arrow"
+            className={clsx({ [styles.arrowOpen]: isOpen })}
           />
         </div>
       </div>
       {isOpen && (
-        <>
-          {loading ? (
-            <div className={styles.dropdownItem}>Loading...</div>
-          ) : error ? (
-            <div className={styles.dropdownItem}>{error}</div>
-          ) : (
-            departments.map((department) => (
-              <div
-                key={department.id}
-                className={styles.dropdownItem}
-                onClick={() => handleOptionClick(department.name)}
-              >
-                <span>{department.name}</span>
-              </div>
-            ))
-          )}
-        </>
+        <div className={clsx(styles.dropdownContent, { [styles.dropdownContentActive]: isOpen })}>
+          {departments.map((dept) => (
+            <div
+              key={dept.id}
+              className={clsx(styles.dropdownItem, {
+                [styles.selected]: selectedDepartment === dept.name,
+              })}
+              onClick={() => handleSelect(dept.name)}
+            >
+              <span>{dept.name}</span>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 }
+
+export default DepartmentsDropdownAdd;

@@ -1,163 +1,99 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./EmployeeDropdownAdd.module.scss";
 import Image from "next/image";
-import config from "../../Config/Config";
-
-interface Employee {
-  id: number;
-  name: string;
-  surname: string;
-  avatar?: string;
-}
+import clsx from "clsx";
+import { useTasks } from "../contexts/TaskContext";
 
 interface EmployeesDropdownAddProps {
   initialEmployee: string;
   onEmployeeChange: (newEmployee: string) => void;
 }
 
-export default function EmployeesDropdownAdd({
-  initialEmployee,
-  onEmployeeChange,
-}: EmployeesDropdownAddProps) {
+function EmployeesDropdownAdd({ initialEmployee, onEmployeeChange }: EmployeesDropdownAddProps) {
+  const { employees } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(initialEmployee);
-  const [selectedAvatar, setSelectedAvatar] = useState<string | undefined>(
-    undefined
-  );
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`${config.serverUrl}/employees`, {
-          headers: {
-            Authorization: `Bearer ${config.token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch employees: ${response.status} ${response.statusText}`
-          );
-        }
-        const data: Employee[] = await response.json();
-        setEmployees(data);
-        const matchedEmployee = data.find(
-          (e) => `${e.name} ${e.surname}` === initialEmployee
-        );
-        if (matchedEmployee) {
-          setSelectedEmployee(
-            `${matchedEmployee.name} ${matchedEmployee.surname}`
-          );
-          setSelectedAvatar(matchedEmployee.avatar);
-        } else {
-          setSelectedEmployee(initialEmployee);
-          setSelectedAvatar(undefined);
-        }
-      } catch (err: any) {
-        console.error("Error fetching employees:", err.message);
-        setError("Failed to load employees");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEmployees();
-  }, [initialEmployee]);
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleArrowClick = () => {
-    setIsOpen(!isOpen);
-  };
+  useEffect(() => {
+    // Only update if initialEmployee has changed
+    if (selectedEmployee !== initialEmployee) {
+      setSelectedEmployee(initialEmployee);
+    }
+  }, [initialEmployee, selectedEmployee]);
 
-  const handleOptionClick = (name: string, avatar?: string) => {
-    setSelectedEmployee(name);
-    setSelectedAvatar(avatar);
-    onEmployeeChange(name);
+  const handleSelect = (employeeName: string) => {
+    setSelectedEmployee(employeeName);
+    onEmployeeChange(employeeName);
     setIsOpen(false);
   };
 
   return (
-    <div
-      className={`${styles.container} ${isOpen ? styles.containerActive : ""}`}
-      ref={dropdownRef}
-    >
-      <div className={styles.beforeDrop}>
+    <div className={styles.container} ref={dropdownRef}>
+      <div
+        className={clsx(styles.beforeDrop, { [styles.containerActive]: isOpen })}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <div className={styles.left}>
-          {selectedAvatar && (
+          {selectedEmployee && (
             <Image
-              src={selectedAvatar}
+              src="/icons/avatar-placeholder.svg" // Replace with emp.avatar if available
               width={24}
               height={24}
-              alt="employee avatar"
+              alt="Employee Avatar"
               className={styles.avatar}
             />
           )}
-          <span>{selectedEmployee || ""}</span>
+          <span>{selectedEmployee || "აირჩიეთ თანამშრომელი"}</span>
         </div>
-        <div className={styles.arrow} onClick={handleArrowClick}>
+        <div className={styles.arrow}>
           <Image
             src="../icons/arrowDown.svg"
             width={14}
             height={14}
-            alt="arrow down"
-            className={isOpen ? styles.arrowOpen : ""}
+            alt="Dropdown Arrow"
+            className={clsx({ [styles.arrowOpen]: isOpen })}
           />
         </div>
       </div>
       {isOpen && (
-        <>
-          {loading ? (
-            <div className={styles.dropdownItem}>Loading...</div>
-          ) : error ? (
-            <div className={styles.dropdownItem}>{error}</div>
-          ) : (
-            employees.map((employee) => (
+        <div className={clsx(styles.dropdownContent, { [styles.dropdownContentActive]: isOpen })}>
+          {employees.map((emp) => {
+            const employeeName = `${emp.name} ${emp.surname || ""}`;
+            return (
               <div
-                key={employee.id}
-                className={styles.dropdownItem}
-                onClick={() =>
-                  handleOptionClick(
-                    `${employee.name} ${employee.surname}`,
-                    employee.avatar
-                  )
-                }
+                key={emp.id}
+                className={clsx(styles.dropdownItem, {
+                  [styles.selected]: selectedEmployee === employeeName,
+                })}
+                onClick={() => handleSelect(employeeName)}
               >
-                {employee.avatar && (
-                  <Image
-                    src={employee.avatar}
-                    width={24}
-                    height={24}
-                    alt={`${employee.name} ${employee.surname} avatar`}
-                    className={styles.avatar}
-                  />
-                )}
-                <span>{`${employee.name} ${employee.surname}`}</span>
+                <Image
+                  src={emp.avatar || "/icons/avatar-placeholder.svg"} // Use emp.avatar if available
+                  width={24}
+                  height={24}
+                  alt={`${employeeName} Avatar`}
+                  className={styles.avatar}
+                />
+                <span>{employeeName}</span>
               </div>
-            ))
-          )}
-        </>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 }
+
+export default EmployeesDropdownAdd;

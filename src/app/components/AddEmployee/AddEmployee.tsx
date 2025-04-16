@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import clsx from "clsx";
 import { useState, useEffect, useRef } from "react";
 import config from "../../Config/Config";
+import { useTasks } from "../../components/contexts/TaskContext";
 
 const fetchDepartments = async () => {
   const response = await fetch(`${config.serverUrl}/departments`, {
@@ -22,6 +23,10 @@ const addEmployeeToApi = async (employeeData: FormData) => {
     },
     body: employeeData,
   });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Failed to add employee: ${response.status} - ${errorData.message || response.statusText}`);
+  }
   return response.json();
 };
 
@@ -92,6 +97,7 @@ const ValidationMessages = ({ error, value }: { error: string | undefined; value
 };
 
 export default function AddEmployee({ onClose }: AddEmployeeProps) {
+  const { refreshEmployees } = useTasks(); // Access refreshEmployees from TaskContext
   const [departments, setDepartments] = useState<any[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -115,11 +121,20 @@ export default function AddEmployee({ onClose }: AddEmployeeProps) {
       formData.append("name", values.name);
       formData.append("surname", values.surname);
       formData.append("department_id", values.department);
-      formData.append("avatar", values.avatar || "");
+      if (values.avatar) {
+        formData.append("avatar", values.avatar);
+      }
 
-      await addEmployeeToApi(formData);
-      onClose();
-      setSubmitting(false);
+      try {
+        await addEmployeeToApi(formData);
+        await refreshEmployees(); // Refresh the employees list after adding
+        onClose();
+      } catch (err: any) {
+        console.error("Error adding employee:", err.message);
+        formik.setFieldError("avatar", "Failed to add employee. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
     },
     validate,
     validateOnChange: true,

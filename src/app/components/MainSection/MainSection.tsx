@@ -28,14 +28,15 @@ function MainSection({
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
-  const { tasks } = useTasks();
+  const { tasks, loading: tasksLoading, error } = useTasks();
 
   useEffect(() => {
+    console.log("MainSection rendered at:", new Date().toISOString());
     console.log("Tasks in MainSection:", tasks);
-    if (tasks.length > 0) {
+    if (!tasksLoading) {
       setLoading(false);
     }
-  }, [tasks]);
+  }, [tasks, tasksLoading]);
 
   const handleDropdownToggle = (dropdown: string | null) => {
     setOpenDropdown((prev) => (prev === dropdown ? null : dropdown));
@@ -67,7 +68,8 @@ function MainSection({
     setOpenDropdown(null);
   };
 
-  if (loading) return <div>Loading tasks...</div>;
+  if (tasksLoading) return <div>Loading tasks...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   const allSelectedItems = [
     ...selectedDepartments.map((value) => ({ type: "department", value })),
@@ -101,7 +103,7 @@ function MainSection({
         setSelectedEmployees((prev) => prev.filter((e) => e !== value));
         break;
       case "priority":
-        setSelectedPriorities((prev) => prev.filter((p) => p !== value));
+        setSelectedPriorities((prev) => prev.filter((p) => e !== value));
         break;
     }
   };
@@ -191,30 +193,26 @@ function MainSection({
         <CardSection
           key={`starter-${tasks.length}`}
           type="starter"
-          tasks={filteredTasks.filter(
-            (task) => task.status?.name === "დასაწყები"
-          )}
+          status="დასაწყები"
+          tasks={filteredTasks}
         />
         <CardSection
           key={`inProgress-${tasks.length}`}
           type="inProgress"
-          tasks={filteredTasks.filter(
-            (task) => task.status?.name === "პროგრესში"
-          )}
+          status="პროგრესში"
+          tasks={filteredTasks}
         />
         <CardSection
           key={`readyForTest-${tasks.length}`}
           type="readyForTest"
-          tasks={filteredTasks.filter(
-            (task) => task.status?.name === "მზად ტესტირებისთვის"
-          )}
+          status="მზად ტესტირებისთვის"
+          tasks={filteredTasks}
         />
         <CardSection
           key={`done-${tasks.length}`}
           type="done"
-          tasks={filteredTasks.filter(
-            (task) => task.status?.name === "დასრულებული"
-          )}
+          status="დასრულებული"
+          tasks={filteredTasks}
         />
       </div>
 
