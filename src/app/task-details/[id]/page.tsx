@@ -25,6 +25,30 @@ const statusIdToNameMap: { [key: number]: string } = {
   4: "დასრულებული",
 };
 
+const georgianMonths: { [key: number]: string } = {
+  1: "იან", // January
+  2: "თებ", // February
+  3: "მარ", // March
+  4: "აპრ", // April
+  5: "მაი", // May
+  6: "ივნ", // June
+  7: "ივლ", // July
+  8: "აგვ", // August
+  9: "სექ", // September
+  10: "ოქტ", // October
+  11: "ნოე", // November
+  12: "დეკ", // December
+};
+
+const formatDueDate = (dueDate: string): string => {
+  const date = new Date(dueDate);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const monthAbbr = georgianMonths[month] || "თვე";
+  return `${monthAbbr} - ${day}/${month}/${year}`;
+};
+
 export default function TaskDetails() {
   const { id } = useParams();
   const router = useRouter();
@@ -33,7 +57,9 @@ export default function TaskDetails() {
     updateTaskStatus,
     updateTaskComments,
     fetchCommentsForTask,
+    clearCommentsForTask,
     loading,
+    loadingComments,
     error,
     statuses,
   } = useTasks();
@@ -41,9 +67,13 @@ export default function TaskDetails() {
   const taskId = parseInt(id as string);
   const task = tasks.find((t) => t.id === taskId);
 
-  const [commentsLoading, setCommentsLoading] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
-  const hasFetchedComments = useRef(false);
+  const [newComment, setNewComment] = useState("");
+  const [replyText, setReplyText] = useState("");
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [commentError, setCommentError] = useState<string | null>(null);
+
+  const replyInputRef = useRef<HTMLDivElement>(null);
 
   // Redirect if task is not found
   useEffect(() => {
@@ -52,46 +82,32 @@ export default function TaskDetails() {
     }
   }, [loading, error, task, router]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!task) return null; // Render nothing while redirecting
-
-  const priorityLvl =
-    task.priority.name === "Low"
-      ? "low"
-      : task.priority.name === "Medium"
-      ? "medium"
-      : task.priority.name === "High"
-      ? "high"
-      : "low";
-
-  const [comments, setComments] = useState<
-    {
-      id: number;
-      name: string;
-      text: string;
-      img: string | undefined;
-      answer: boolean;
-      parent_id: number | null;
-    }[]
-  >([]);
-  const [newComment, setNewComment] = useState("");
-  const [replyText, setReplyText] = useState("");
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
-
-  const replyInputRef = useRef<HTMLDivElement>(null);
-
+  // Fetch comments on mount and clear on unmount
   useEffect(() => {
-    const loadComments = async () => {
-      if (hasFetchedComments.current || task.commentDetails) return;
-      setCommentsLoading(true);
-      await fetchCommentsForTask(taskId);
-      setCommentsLoading(false);
-      hasFetchedComments.current = true;
-    };
-    loadComments();
-  }, [taskId, fetchCommentsForTask, task.commentDetails]);
+    if (taskId) {
+      console.log(`Fetching comments for taskId: ${taskId}`);
+      fetchCommentsForTask(taskId);
 
+      return () => {
+        console.log(`Clearing comments for taskId: ${taskId}`);
+        if (typeof clearCommentsForTask === "function") {
+          clearCommentsForTask(taskId);
+        } else {
+          console.warn("clearCommentsForTask is not available in TaskContext");
+        }
+      };
+    }
+  }, [taskId, fetchCommentsForTask, clearCommentsForTask]);
+
+  // Refetch comments on route change (handles Next.js caching)
+  useEffect(() => {
+    if (taskId) {
+      console.log(`Route changed, refetching comments for taskId: ${taskId}`);
+      fetchCommentsForTask(taskId);
+    }
+  }, [taskId, fetchCommentsForTask, router.asPath]);
+
+  // Handle click outside to close reply input
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -112,28 +128,55 @@ export default function TaskDetails() {
     };
   }, [replyingTo]);
 
-  const flattenComments = (commentsData: any[]) => {
-    const flattened: {
-      id: number;
-      name: string;
-      text: string;
-      img: string;
-      answer: boolean;
-      parent_id: number | null;
-    }[] = [];
-    commentsData.forEach((comment) => {
-      flattened.push({
-        id: comment.id || 0,
-        name: comment.author_nickname || "Unknown",
-        text: comment.text || comment.content || "No content",
-        img: comment.author_avatar || "/images/pfp.svg",
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!task) return null; // Render nothing while redirecting
+
+  const priorityLvl =
+    task.priority.name === "Low"
+      ? "low"
+      : task.priority.name === "Medium"
+      ? "medium"
+      : task.priority.name === "High"
+      ? "high"
+      : "low";
+
+  const flattenedComments =
+    task.commentDetails?.map((comment) => ({
+      id: comment.id || 0,
+      name: comment.author_nickname || "Unknown",
+      text: comment.text || comment.content || "No content",
+      img: comment.author_avatar || "/images/pfp.svg",
+      answer: false,
+      parent_id: comment.parent_id || null,
+      sub_comments: comment.sub_comments || [],
+    })) || [];
+
+  // Flatten sub-comments
+  const allComments = flattenedComments.reduce(
+    (
+      acc: {
+        id: number;
+        name: string;
+        text: string;
+        img: string;
+        answer: boolean;
+        parent_id: number | null;
+      }[],
+      comment
+    ) => {
+      acc.push({
+        id: comment.id,
+        name: comment.name,
+        text: comment.text,
+        img: comment.img,
         answer: false,
-        parent_id: comment.parent_id || null,
+        parent_id: null,
       });
 
       if (comment.sub_comments && comment.sub_comments.length > 0) {
         comment.sub_comments.forEach((subComment: any) => {
-          flattened.push({
+          acc.push({
             id: subComment.id || 0,
             name: subComment.author_nickname || "Unknown",
             text: subComment.text || subComment.content || "No content",
@@ -143,17 +186,10 @@ export default function TaskDetails() {
           });
         });
       }
-    });
-    return flattened;
-  };
-
-  useEffect(() => {
-    if (task.commentDetails) {
-      setComments(flattenComments(task.commentDetails));
-    } else {
-      setComments([]);
-    }
-  }, [task.commentDetails]);
+      return acc;
+    },
+    []
+  );
 
   const handleStatusChange = async (newStatus: string) => {
     const normalizedStatus = newStatus.trim();
@@ -189,43 +225,34 @@ export default function TaskDetails() {
 
     if (isNaN(taskId)) return;
 
-    const response = await fetch(
-      `${config.serverUrl}/tasks/${taskId}/comments`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${config.token}`,
-        },
-        body: JSON.stringify({
-          text: newComment,
-          task_id: taskId,
-        }),
-      }
-    );
-
-    if (response.ok) {
-      const newPostedComment = await response.json();
-      const newCommentId = newPostedComment.id || Date.now();
-
-      const updatedComments = [
+    try {
+      setCommentError(null);
+      const response = await fetch(
+        `${config.serverUrl}/tasks/${taskId}/comments`,
         {
-          id: newCommentId,
-          name: "თქვენ",
-          text: newComment,
-          img: task.employee.avatar,
-          answer: false,
-          parent_id: null,
-        },
-        ...comments,
-      ];
-      setComments(updatedComments);
-      updateTaskComments(taskId, updatedComments.length);
-      hasFetchedComments.current = false;
-      await fetchCommentsForTask(taskId);
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${config.token}`,
+          },
+          body: JSON.stringify({
+            text: newComment,
+            task_id: taskId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Failed to post comment: ${response.status} - ${errorData}`);
+      }
+
+      await fetchCommentsForTask(taskId); // Refetch comments from the server
+      updateTaskComments(taskId, (task.commentDetails?.length || 0) + 1);
       setNewComment("");
-    } else {
-      console.error("Failed to post comment:", await response.text());
+    } catch (err: any) {
+      console.error("Error posting comment:", err.message);
+      setCommentError(`Failed to post comment: ${err.message}`);
     }
   };
 
@@ -234,50 +261,36 @@ export default function TaskDetails() {
 
     if (isNaN(taskId)) return;
 
-    const response = await fetch(
-      `${config.serverUrl}/tasks/${taskId}/comments`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${config.token}`,
-        },
-        body: JSON.stringify({
-          text: replyText,
-          task_id: taskId,
-          parent_id: parentId,
-        }),
-      }
-    );
-
-    if (response.ok) {
-      const newPostedReply = await response.json();
-      const newReplyId = newPostedReply.id || Date.now();
-
-      const parentIndex = comments.findIndex(
-        (comment) => comment.id === parentId
+    try {
+      setCommentError(null);
+      const response = await fetch(
+        `${config.serverUrl}/tasks/${taskId}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${config.token}`,
+          },
+          body: JSON.stringify({
+            text: replyText,
+            task_id: taskId,
+            parent_id: parentId,
+          }),
+        }
       );
-      if (parentIndex === -1) return;
 
-      const newSubcomment = {
-        id: newReplyId,
-        name: "თქვენ",
-        text: replyText,
-        img: task.employee.avatar,
-        answer: true,
-        parent_id: parentId,
-      };
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Failed to post reply: ${response.status} - ${errorData}`);
+      }
 
-      const updatedComments = [...comments];
-      updatedComments.splice(parentIndex + 1, 0, newSubcomment);
-      setComments(updatedComments);
-      updateTaskComments(taskId, updatedComments.length);
-      hasFetchedComments.current = false;
-      await fetchCommentsForTask(taskId);
+      await fetchCommentsForTask(taskId); // Refetch comments from the server
+      updateTaskComments(taskId, (task.commentDetails?.length || 0) + 1);
       setReplyText("");
       setReplyingTo(null);
-    } else {
-      console.error("Failed to post reply:", await response.text());
+    } catch (err: any) {
+      console.error("Error posting reply:", err.message);
+      setCommentError(`Failed to post reply: ${err.message}`);
     }
   };
 
@@ -364,9 +377,7 @@ export default function TaskDetails() {
               <p>დავალების ვადა</p>
             </div>
             <div className={styles.date}>
-              {task.due_date
-                ? new Date(task.due_date).toLocaleDateString()
-                : "No due date"}
+              {task.due_date ? formatDueDate(task.due_date) : "No due date"}
             </div>
           </div>
         </div>
@@ -394,14 +405,15 @@ export default function TaskDetails() {
         <div className={styles.comments}>
           <div className={styles.commentsCounter}>
             <h2>კომენტარები</h2>
-            <span>{comments.length}</span>
+            <span>{allComments.length}</span>
           </div>
-          {commentsLoading ? (
+          {commentError && <div className={styles.error}>{commentError}</div>}
+          {loadingComments ? (
             <div>Loading comments...</div>
-          ) : comments.length === 0 ? (
+          ) : allComments.length === 0 ? (
             <div>No comments yet.</div>
           ) : (
-            comments.map((comment) => (
+            allComments.map((comment) => (
               <div key={comment.id} className={styles.comment}>
                 <Comment
                   img={comment.img}

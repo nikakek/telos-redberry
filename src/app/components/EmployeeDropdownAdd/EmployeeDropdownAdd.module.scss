@@ -10,9 +10,6 @@
   overflow-x: hidden;
 }
 
-.containerActive {
-}
-
 .beforeDrop {
   display: flex;
   justify-content: space-between;
@@ -62,7 +59,7 @@
   align-items: center;
   width: 100%;
   height: 46px;
-  padding: 8px 14px;
+  padding: 9px 14px;
   cursor: pointer;
   overflow: hidden;
   box-sizing: border-box;
@@ -77,6 +74,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+
+  font-family: FiraGO;
+font-weight: 300;
+font-size: 14px;
+line-height: 100%;
+letter-spacing: 0%;
+
 }
 
 .beforeDropOpen {
@@ -95,4 +99,36 @@
   width: 100%;
   background-color: #fff;
   box-sizing: border-box;
+}
+
+.addEmployeeButton {
+  padding: 14.5px 15px;
+  display: flex;
+  button {
+    background: none;
+    border: none;
+    color: $purple;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    gap: 8px;
+    display: flex;
+    font-family: FiraGO;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    align-items: center;
+    margin-left: 0px;
+  }
+
+  span {
+    margin-top: 3px;
+  }
+}
+
+.noEmployees {
+  padding: 8px;
+  color: #999;
+  text-align: center;
 }

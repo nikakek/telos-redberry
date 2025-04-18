@@ -5,16 +5,28 @@ import Image from "next/image";
 import clsx from "clsx";
 import { useTasks } from "../contexts/TaskContext";
 
+interface Employee {
+  id: number;
+  name: string;
+  surname: string;
+  avatar: string | null;
+  department_id: number;
+}
+
 interface EmployeesDropdownAddProps {
   initialEmployee: string;
+  selectedDepartment: string;
   onEmployeeChange: (newEmployee: string) => void;
+  onAddEmployeeClick: () => void;
 }
 
 function EmployeesDropdownAdd({
   initialEmployee,
+  selectedDepartment,
   onEmployeeChange,
+  onAddEmployeeClick,
 }: EmployeesDropdownAddProps) {
-  const { employees } = useTasks();
+  const { employees, departments } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(initialEmployee);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -37,6 +49,19 @@ function EmployeesDropdownAdd({
       setSelectedEmployee(initialEmployee);
     }
   }, [initialEmployee, selectedEmployee]);
+
+  // Find the department ID for the selected department
+  const selectedDepartmentObj = departments.find(
+    (dept: any) => dept.name === selectedDepartment
+  );
+  const selectedDepartmentId = selectedDepartmentObj?.id;
+
+  // Filter employees by the selected department
+  const filteredEmployees = selectedDepartmentId
+    ? employees.filter(
+        (employee: Employee) => employee.department_id === selectedDepartmentId
+      )
+    : [];
 
   const handleSelect = (employeeName: string) => {
     setSelectedEmployee(employeeName);
@@ -69,7 +94,7 @@ function EmployeesDropdownAdd({
               className={styles.avatar}
             />
           )}
-          <span>{selectedEmployee || ""}</span>
+          <span>{selectedDepartment ? (selectedEmployee || "აირჩიეთ თანამშრომელი") : ""}</span>
         </div>
         <div className={styles.arrow}>
           <Image
@@ -87,27 +112,35 @@ function EmployeesDropdownAdd({
             [styles.dropdownContentActive]: isOpen,
           })}
         >
-          {employees.map((emp) => {
-            const employeeName = `${emp.name} ${emp.surname || ""}`;
-            return (
-              <div
-                key={emp.id}
-                className={clsx(styles.dropdownItem, {
-                  [styles.selected]: selectedEmployee === employeeName,
-                })}
-                onClick={() => handleSelect(employeeName)}
-              >
-                <Image
-                  src={emp.avatar || "/icons/avatar-placeholder.svg"}
-                  width={24}
-                  height={24}
-                  alt={`${employeeName} Avatar`}
-                  className={styles.avatar}
-                />
-                <span>{employeeName}</span>
-              </div>
-            );
-          })}
+          <div className={styles.addEmployeeButton}>
+            <button onClick={onAddEmployeeClick}> <Image src="../icons/employeesPlus.svg" width={18} height={18} alt="+"/><span>ᲓᲐᲐᲛᲐᲢᲔ ᲗᲐᲜᲐᲛᲨᲠᲝᲛᲔᲚᲘ</span></button>
+          </div>
+          {filteredEmployees.length > 0 ? (
+            filteredEmployees.map((emp: Employee) => {
+              const employeeName = `${emp.name} ${emp.surname || ""}`;
+              return (
+                <div
+                  key={emp.id}
+                  className={clsx(styles.dropdownItem, {
+                    [styles.selected]: selectedEmployee === employeeName,
+                  })}
+                  onClick={() => handleSelect(employeeName)}
+                >
+                  <Image
+                    src={emp.avatar || "/icons/avatar-placeholder.svg"}
+                    width={24}
+                    height={24}
+                    alt={`${employeeName} Avatar`}
+                    className={styles.avatar}
+                  />
+                  <span>{employeeName}</span>
+                </div>
+              );
+            })
+          ) : (
+            <div className={styles.noEmployees}>
+            </div>
+          )}
         </div>
       )}
     </div>

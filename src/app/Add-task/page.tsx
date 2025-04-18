@@ -4,11 +4,13 @@ import EmployeesDropdownAdd from "../components/EmployeeDropdownAdd/EmployeeDrop
 import PriorityDropdown from "../components/PriorityDropdown/PriorityDropdown";
 import StatusDropdownAdd from "../components/StatusDropdownAdd/StatusDropdownAdd";
 import DatePicker from "../components/Calendar/DatePicker";
+import AddEmployee from "../components/AddEmployee/AddEmployee";
 import styles from "./page.module.scss";
+import clsx from "clsx";
 import { useFormik } from "formik";
 import { useTasks } from "../components/contexts/TaskContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface FormValues {
   name: string;
@@ -20,14 +22,20 @@ interface FormValues {
   due_date: string;
 }
 
-const initialValues: FormValues = {
+const getTomorrowDate = (): string => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString();
+};
+
+const defaultInitialValues: FormValues = {
   name: "",
   description: "",
   status: "დასაწყები",
-  priority: "",
+  priority: "საშუალო",
   department: "",
   employee: "",
-  due_date: "",
+  due_date: getTomorrowDate(),
 };
 
 const validate = (values: FormValues) => {
@@ -35,8 +43,8 @@ const validate = (values: FormValues) => {
 
   if (!values.name) {
     errors.name = "სავალდებულო";
-  } else if (values.name.length < 2) {
-    errors.name = "მინიმუმ 2 სიმბოლო";
+  } else if (values.name.length < 3) {
+    errors.name = "მინიმუმ 3 სიმბოლო";
   } else if (values.name.length > 255) {
     errors.name = "მაქსიმუმ 255 სიმბოლო";
   }
@@ -129,9 +137,12 @@ export default function AddTask() {
     loading,
   } = useTasks();
   const router = useRouter();
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [hasSelectedDepartment, setHasSelectedDepartment] = useState(false);
+  const isMounted = useRef(false);
 
   const formik = useFormik<FormValues>({
-    initialValues,
+    initialValues: defaultInitialValues,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
         if (!departments || departments.length === 0) {
@@ -173,6 +184,7 @@ export default function AddTask() {
         };
 
         await addTask(payload);
+        localStorage.removeItem("addTaskFormState");
         resetForm();
         router.push("/");
       } catch (error: any) {
@@ -189,6 +201,53 @@ export default function AddTask() {
     validateOnChange: true,
     validateOnBlur: true,
   });
+
+  // Load saved state from localStorage on client-side mount
+  useEffect(() => {
+    if (isMounted.current) return; // Prevent running after initial mount
+    isMounted.current = true;
+
+    try {
+      const savedState = localStorage.getItem("addTaskFormState");
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        const { formValues, hasSelectedDepartment: savedHasSelectedDepartment } = parsedState;
+
+        // Validate formValues against FormValues interface
+        if (
+          formValues &&
+          typeof formValues === "object" &&
+          "name" in formValues &&
+          "description" in formValues &&
+          "status" in formValues &&
+          "priority" in formValues &&
+          "department" in formValues &&
+          "employee" in formValues &&
+          "due_date" in formValues
+        ) {
+          formik.setValues(formValues as FormValues);
+          setHasSelectedDepartment(!!savedHasSelectedDepartment);
+        } else {
+          console.warn("Invalid localStorage data, using defaults");
+        }
+      }
+    } catch (error) {
+      console.error("Error loading localStorage state:", error);
+    }
+  }, [formik]);
+
+  // Save form state to localStorage
+  useEffect(() => {
+    try {
+      const state = {
+        formValues: formik.values,
+        hasSelectedDepartment,
+      };
+      localStorage.setItem("addTaskFormState", JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [formik.values, hasSelectedDepartment]);
 
   useEffect(() => {
     if (formik.values.due_date) {
@@ -229,7 +288,7 @@ export default function AddTask() {
                 <ValidationMessages
                   error={formik.errors.name}
                   value={formik.values.name}
-                  minLength={2}
+                  minLength={3}
                   maxLength={255}
                 />
               </div>
@@ -293,6 +352,8 @@ export default function AddTask() {
                   initialDepartment={formik.values.department}
                   onDepartmentChange={(newDepartment: string) => {
                     formik.setFieldValue("department", newDepartment);
+                    formik.setFieldValue("employee", "");
+                    setHasSelectedDepartment(true);
                   }}
                 />
                 {formik.errors.department && formik.touched.department && (
@@ -301,13 +362,19 @@ export default function AddTask() {
                   </div>
                 )}
               </div>
-              <div className={styles.employeeDropdownDiv}>
+              <div
+                className={clsx(styles.employeeDropdownDiv, {
+                  [styles.disabled]: !formik.values.department || !hasSelectedDepartment,
+                })}
+              >
                 <label>თანამშრომელი*</label>
                 <EmployeesDropdownAdd
                   initialEmployee={formik.values.employee}
+                  selectedDepartment={formik.values.department}
                   onEmployeeChange={(newEmployee: string) =>
                     formik.setFieldValue("employee", newEmployee)
                   }
+                  onAddEmployeeClick={() => setIsAddEmployeeModalOpen(true)}
                 />
                 {formik.errors.employee && formik.touched.employee && (
                   <div className={styles.errorMessage}>
@@ -321,6 +388,7 @@ export default function AddTask() {
                   width={318}
                   label="დასრულების თარიღი*"
                   placeholder="აირჩიეთ თარიღი"
+                  minDate={new Date()}
                   onDateChange={(date: Date | null) => {
                     formik.setFieldValue(
                       "due_date",
@@ -348,6 +416,9 @@ export default function AddTask() {
             </button>
           </div>
         </form>
+        {isAddEmployeeModalOpen && (
+          <AddEmployee onClose={() => setIsAddEmployeeModalOpen(false)} />
+        )}
       </div>
     </section>
   );

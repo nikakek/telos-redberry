@@ -74,6 +74,12 @@
     font-weight: 500;
     margin-bottom: 5px;
     display: block;
+
+    font-family: FiraGO;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
   }
 
   input,
@@ -100,6 +106,9 @@
   .validationMessages {
     margin-top: 5px;
     font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .validationMessage {
@@ -196,6 +205,7 @@
 .dropdowns {
   display: flex;
   justify-content: space-between;
+  width: 523px;
 }
 
 .filters {
@@ -208,6 +218,12 @@
     font-weight: 500;
     margin-bottom: 5px;
     display: block;
+
+    font-family: FiraGO;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
   }
 }
 
@@ -321,4 +337,11 @@
   height: 45px;
   border: 1px solid rgba(222, 226, 230, 1);
   border-radius: 5px;
+}
+
+.employeeDropdownDiv {
+  &.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
 }

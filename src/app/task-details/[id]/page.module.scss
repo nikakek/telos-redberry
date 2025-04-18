@@ -12,7 +12,7 @@
 .commentsDiv {
   width: 651px;
   border-radius: 10px;
-  border: 0.3px solid rgba(221, 210, 255, 1);
+  border: 0.3px solid rgba(173, 181, 189, 1);
   background-color: rgba(248, 243, 254, 0.65);
   padding: 40px 45px;
 }
@@ -20,6 +20,7 @@
 .lvl {
   display: flex;
   gap: 18px;
+  align-items: center;
 }
 
 .task {

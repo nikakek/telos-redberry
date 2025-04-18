@@ -47,13 +47,13 @@ const initialValues: FormValues = {
 const validate = (values: FormValues) => {
   const errors: Partial<FormValues> = {};
 
-  if (values.name.length < 2) errors.name = "მინიმუმ 2 სიმბოლო";
-  else if (values.name.length > 255) errors.name = "მაქსიმუმ 255 სიმბოლო";
+  if (values.name.length < 2) errors.name = "✓ მინიმუმ 2 სიმბოლო";
+  else if (values.name.length > 255) errors.name = "✓ მაქსიმუმ 255 სიმბოლო";
   else if (!/^[a-zA-Zა-ჰ]+$/.test(values.name) && values.name.length > 0)
     errors.name = "მარტო ლათინური ან ქართული სიმბოლოები";
 
-  if (values.surname.length < 2) errors.surname = "მინიმუმ 2 სიმბოლო";
-  else if (values.surname.length > 255) errors.surname = "მაქსიმუმ 255 სიმბოლო";
+  if (values.surname.length < 2) errors.surname = "✓ მინიმუმ 2 სიმბოლო";
+  else if (values.surname.length > 255) errors.surname = "✓ მაქსიმუმ 255 სიმბოლო";
   else if (!/^[a-zA-Zა-ჰ]+$/.test(values.surname) && values.surname.length > 0)
     errors.surname = "მარტო ლათინური ან ქართული სიმბოლოები";
 
@@ -89,9 +89,9 @@ const ValidationMessages = ({ error, value }: { error: string | undefined; value
   return (
     <div className={styles.validationMessages}>
       <div className={`${styles.validationMessage} ${minMessageClass}`}>
-        {error === "მარტო ლათინური ან ქართული სიმბოლოები" ? "მარტო ლათინური ან ქართული სიმბოლოები" : "მინიმუმ 2 სიმბოლო"}
+        {error === "მარტო ლათინური ან ქართული სიმბოლოები" ? "მარტო ლათინური ან ქართული სიმბოლოები" : "✓ მინიმუმ 2 სიმბოლო"}
       </div>
-      <div className={`${styles.validationMessage} ${maxMessageClass}`}>მაქსიმუმ 255 სიმბოლო</div>
+      <div className={`${styles.validationMessage} ${maxMessageClass}`}>✓ მაქსიმუმ 255 სიმბოლო</div>
     </div>
   );
 };

@@ -200,12 +200,13 @@
 
   .cancelButton {
     background-color: #fff;
-    border: 1px solid #ccc;
-    color: #333;
+    border: 1px solid rgba(131, 56, 236, 1);
+    color: rgba(52, 58, 64, 1);
+
   }
 
   .submitButton {
-    background-color: #6b48ff;
+    background-color: rgba(131, 56, 236, 1);
     border: none;
     color: #fff;
   }
